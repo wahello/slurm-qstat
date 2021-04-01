@@ -19,9 +19,9 @@ const helpText = `Usage: %s [--filter=<part>,...] [--help] --jobs|--partitions [
 
     --help                      Show this help text
 
-    --jobs                      Show only job information
+    --jobs                      Show job information
 
-    --partitions                Show only partition information
+    --partitions                Show partition information
 
     --version                   Show version information
 `
