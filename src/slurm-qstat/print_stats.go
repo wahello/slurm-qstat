@@ -71,6 +71,7 @@ func printPartitionStatus(p map[string]partitionInfo) {
 		strconv.FormatFloat(float64(otherSum)/float64(totalSum)*100.0, 'f', 3, 64),
 		strconv.FormatFloat(100.0, 'f', 3, 64),
 	})
+	table.SetFooterAlignment(tablewriter.ALIGN_RIGHT)
 	table.AppendBulk(data)
 	table.Render()
 

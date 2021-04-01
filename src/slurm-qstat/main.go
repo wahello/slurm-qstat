@@ -19,7 +19,7 @@ func main() {
 	flag.Parse()
 
 	if len(flag.Args()) > 0 {
-		fmt.Fprintf(os.Stderr, "Error: Trailing arguments %s", strings.Join(flag.Args(), " "))
+		fmt.Fprintf(os.Stderr, "Error: Trailing arguments %s\n", strings.Join(flag.Args(), " "))
 		showHelp()
 		os.Exit(1)
 	}
@@ -39,7 +39,8 @@ func main() {
 	}
 
 	if !*partitions && !*jobs {
-		fmt.Fprintln(os.Stderr, "Error: What should be displayed?")
+		fmt.Fprintln(os.Stderr, "Error: What should be displayed?\n")
+		showHelp()
 		os.Exit(1)
 	}
 
