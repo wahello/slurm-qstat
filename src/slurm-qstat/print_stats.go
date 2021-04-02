@@ -147,6 +147,14 @@ func printJobStatus(j map[string]jobData, jidList []string) {
 			log.Panicf("BUG: JobName not set for job %s\n", job)
 		}
 
+		nodes, found := jData["NodeList"]
+		if !found {
+			log.Panicf("BUG: NodeList not set for job %s\n", job)
+		}
+		if nodes == "(null}" {
+			nodes = ""
+		}
+
 		if state == "PENDING" {
 			// Jobs can also be submitted, requesting a number of Nodes instead of CPUs
 			// Therefore we will check TRES first
@@ -178,6 +186,8 @@ func printJobStatus(j map[string]jobData, jidList []string) {
 				log.Panicf("BUG: No Reason for pending job %s\n", job)
 			}
 
+			nodes = "<not_scheduled_yet>"
+
 		} else {
 			host, found = jData["BatchHost"]
 			if !found {
@@ -197,6 +207,7 @@ func printJobStatus(j map[string]jobData, jidList []string) {
 			state,
 			pendingReason,
 			host,
+			nodes,
 			strconv.FormatUint(numCpus, 10),
 			startTime,
 			name,
@@ -205,11 +216,12 @@ func printJobStatus(j map[string]jobData, jidList []string) {
 	}
 
 	table := tablewriter.NewWriter(os.Stdout)
-	table.SetHeader([]string{"JobID", "Partition", "User", "State", "Reason", "Host", "CPUs", "Starttime", "Name"})
+	table.SetHeader([]string{"JobID", "Partition", "User", "State", "Reason", "Batchhost", "Nodes", "CPUs", "Starttime", "Name"})
 	table.SetAutoWrapText(false)
 	table.SetAutoFormatHeaders(true)
 	table.SetFooter([]string{
 		"Sum",
+		"",
 		fmt.Sprintf("Failed: %d", failCount),
 		fmt.Sprintf("Pending: %d", pendCount),
 		fmt.Sprintf("Preempted: %d", preeemptCount),
