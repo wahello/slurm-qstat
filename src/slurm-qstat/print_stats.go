@@ -7,6 +7,7 @@ import (
 	"regexp"
 	"sort"
 	"strconv"
+	"strings"
 
 	"github.com/olekukonko/tablewriter"
 )
@@ -226,6 +227,14 @@ func printJobStatus(j map[string]jobData, jidList []string) {
 func printNodeStatus(n map[string]nodeData) {
 	var data [][]string
 	var sorted []string
+	var totalCount uint64
+	var allocCount uint64
+	var drainingCount uint64
+	var idleCount uint64
+	var drainedCount uint64
+	var mixedCount uint64
+	var downCount uint64
+	var otherCount uint64
 
 	for node := range n {
 		sorted = append(sorted, node)
@@ -244,6 +253,24 @@ func printNodeStatus(n map[string]nodeData) {
 		if !found {
 			log.Panicf("BUG: No State for node %s\n", node)
 		}
+
+		if state == "ALLOCATED" {
+			allocCount++
+		} else if state == "ALLOCATED+DRAIN" {
+			drainingCount++
+		} else if state == "IDLE" {
+			idleCount++
+		} else if state == "IDLE+DRAIN" {
+			drainedCount++
+		} else if state == "MIXED" {
+			mixedCount++
+		} else if strings.Contains(state, "DOWN") {
+			downCount++
+		} else {
+			otherCount++
+		}
+
+		totalCount++
 
 		version := ndata["Version"]
 
@@ -292,18 +319,19 @@ func printNodeStatus(n map[string]nodeData) {
 	table.SetHeader([]string{"Node", "Partition", "State", "SLURM version", "TRES (configured)", "TRES (allocated)", "Sockets", "Boards", "Threads per core", "Reason"})
 	table.SetAutoWrapText(false)
 	table.SetAutoFormatHeaders(true)
-	// table.SetFooter([]string{
-	// 	"Sum",
-	// 	fmt.Sprintf("Failed: %d", failCount),
-	// 	fmt.Sprintf("Pending: %d", pendCount),
-	// 	fmt.Sprintf("Preempted: %d", preeemptCount),
-	// 	fmt.Sprintf("Stoped: %d", stopCount),
-	// 	fmt.Sprintf("Suspended: %d", suspendCount),
-	// 	fmt.Sprintf("Running: %d", runCount),
-	// 	fmt.Sprintf("Other: %d", otherCount),
-	// 	fmt.Sprintf("Total: %d", totalCount),
-	// })
-	// table.SetFooterAlignment(tablewriter.ALIGN_LEFT)
+	table.SetFooter([]string{
+		"Sum",
+		"",
+		fmt.Sprintf("Allocated: %d", allocCount),
+		fmt.Sprintf("Idle: %d", idleCount),
+		fmt.Sprintf("Mixed: %d", mixedCount),
+		fmt.Sprintf("Draining: %d", drainingCount),
+		fmt.Sprintf("Drained: %d", drainedCount),
+		fmt.Sprintf("Down: %d", downCount),
+		fmt.Sprintf("Other: %d", otherCount),
+		fmt.Sprintf("Total: %d", totalCount),
+	})
+	table.SetFooterAlignment(tablewriter.ALIGN_LEFT)
 	table.AppendBulk(data)
 	table.Render()
 }
