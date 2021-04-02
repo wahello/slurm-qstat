@@ -1,6 +1,7 @@
 package main
 
 type nodeData map[string]string
+type jobData map[string]string
 
 type partitionInfo struct {
 	CoresAllocated uint64

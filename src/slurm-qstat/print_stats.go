@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"os"
+	"regexp"
 	"sort"
 	"strconv"
 
@@ -75,4 +76,116 @@ func printPartitionStatus(p map[string]partitionInfo) {
 	table.AppendBulk(data)
 	table.Render()
 
+}
+
+func printJobStatus(j map[string]jobData, jidList []string) {
+	var reUser = regexp.MustCompile(`\(\d+\)`)
+	var data [][]string
+
+	for _, job := range jidList {
+		var host string
+		var startTime string
+		var pendingReason string
+
+		jData, found := j[job]
+		if !found {
+			log.Panicf("BUG: No job data found for job %s\n", job)
+		}
+
+		user, found := jData["UserId"]
+		if !found {
+			log.Panicf("BUG: No user found for job %s\n", job)
+		}
+
+		user = reUser.ReplaceAllString(user, "")
+
+		state, found := jData["JobState"]
+		if !found {
+			log.Panicf("BUG: No JobState found for job %s\n", job)
+		}
+
+		partition, found := jData["Partition"]
+		if !found {
+			log.Panicf("BUG: No partition found for job %s\n", job)
+		}
+
+		tres := jData["TRES"]
+
+		_numCpus, found := jData["NumCPUs"]
+		if !found {
+			log.Panicf("BUG: NumCPUs not found for job %s\n", job)
+		}
+		numCpus, err := strconv.ParseUint(_numCpus, 10, 64)
+		if err != nil {
+			log.Panicf("BUG: Can't convert NumCpus to an integer for job %s: %s\n", job, err)
+		}
+
+		name, found := jData["JobName"]
+		if !found {
+			log.Panicf("BUG: JobName not set for job %s\n", job)
+		}
+
+		if state == "PENDING" {
+			// Jobs can also be submitted, requesting a number of Nodes instead of CPUs
+			// Therefore we will check TRES first
+			tresCpus, err := getCpusFromTresString(tres)
+			if err != nil {
+				log.Panicf("BUG: Can't get number of CPUs from TRES as integer for job %s: %s\n", job, err)
+			}
+
+			if tresCpus != 0 {
+				numCpus = tresCpus
+			}
+
+			// PENDING jobs never scheduled at all don't have BatchHost set (for obvious reasons)
+			// Rescheduled and now PENDING jobs do have a BatchHost
+			host, found = jData["BatchHost"]
+			if !found {
+				host = "<not_scheduled_yet>"
+			}
+
+			// The same applies for StartTime
+			startTime, found = jData["StartTime"]
+			if !found {
+				startTime = "<not_scheduled_yet>"
+			}
+
+			// Obviously, PENDING jobs _always_ have a Reason
+			pendingReason, found = jData["Reason"]
+			if !found {
+				log.Panicf("BUG: No Reason for pending job %s\n", job)
+			}
+
+		} else {
+			host, found = jData["BatchHost"]
+			if !found {
+				log.Panicf("BUG: No BatchHost set for job %s\n", job)
+			}
+
+			startTime, found = jData["StartTime"]
+			if !found {
+				log.Panicf("BUG: No StartTime set for job %s\n", job)
+			}
+		}
+
+		data = append(data, []string{
+			job,
+			partition,
+			user,
+			state,
+			pendingReason,
+			host,
+			strconv.FormatUint(numCpus, 10),
+			startTime,
+			name,
+		})
+	}
+
+	table := tablewriter.NewWriter(os.Stdout)
+	table.SetHeader([]string{"JobID", "Partition", "User", "State", "Reason", "Host", "CPUs", "Starttime", "Name"})
+	table.SetAutoWrapText(false)
+	table.SetAutoFormatHeaders(true)
+	table.SetFooterAlignment(tablewriter.ALIGN_RIGHT)
+	table.AppendBulk(data)
+	table.Render()
 }
