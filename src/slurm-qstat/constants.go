@@ -13,7 +13,7 @@ Public License Version 3. (http://www.gnu.org/copyleft/gpl.html)
 Build with go version: %s
 `
 
-const helpText = `Usage: %s [--filter=<part>,...] [--help] --jobs=<filter>|--partitions [--version]
+const helpText = `Usage: %s [--filter=<part>,...] [--help] --jobs=<filter>|--nodes|--partitions [--version]
 
     --filter=<part>,...         Limit output to comma separated list of partitions
 
@@ -23,6 +23,8 @@ const helpText = `Usage: %s [--filter=<part>,...] [--help] --jobs=<filter>|--par
                                     all         - show all jobs
                                     not-running - show not running only (state other than RUNNING)
                                     running     - show only running jobs (state RUNNING)
+
+    --nodes                     Show node information
 
     --partitions                Show partition information
 

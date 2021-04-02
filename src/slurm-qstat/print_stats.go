@@ -222,3 +222,88 @@ func printJobStatus(j map[string]jobData, jidList []string) {
 	table.AppendBulk(data)
 	table.Render()
 }
+
+func printNodeStatus(n map[string]nodeData) {
+	var data [][]string
+	var sorted []string
+
+	for node := range n {
+		sorted = append(sorted, node)
+	}
+	sort.Strings(sorted)
+
+	for _, node := range sorted {
+		ndata := n[node]
+
+		partitions, found := ndata["Partitions"]
+		if !found {
+			log.Panicf("BUG: No Partitions for node %s\n", node)
+		}
+
+		state, found := ndata["State"]
+		if !found {
+			log.Panicf("BUG: No State for node %s\n", node)
+		}
+
+		version := ndata["Version"]
+
+		cfgTres, found := ndata["CfgTRES"]
+		if !found {
+			log.Panicf("BUG: No CfgTRES for node %s\n", node)
+		}
+
+		allocTres, found := ndata["AllocTRES"]
+		if !found {
+			log.Panicf("BUG: No AllocTRES for node %s\n", node)
+		}
+
+		sockets, found := ndata["Sockets"]
+		if !found {
+			log.Panicf("BUG: No Sockets for node %s\n", node)
+		}
+
+		boards, found := ndata["Boards"]
+		if !found {
+			log.Panicf("BUG: No Boards for node %s\n", node)
+		}
+
+		tpc, found := ndata["ThreadsPerCore"]
+		if !found {
+			log.Panicf("BUG: No ThreadsPerCore for node %s\n", node)
+		}
+
+		reason := ndata["Reason"]
+
+		data = append(data, []string{
+			node,
+			partitions,
+			state,
+			version,
+			cfgTres,
+			allocTres,
+			sockets,
+			boards,
+			tpc,
+			reason,
+		})
+	}
+
+	table := tablewriter.NewWriter(os.Stdout)
+	table.SetHeader([]string{"Node", "Partition", "State", "SLURM version", "TRES (configured)", "TRES (allocated)", "Sockets", "Boards", "Threads per core", "Reason"})
+	table.SetAutoWrapText(false)
+	table.SetAutoFormatHeaders(true)
+	// table.SetFooter([]string{
+	// 	"Sum",
+	// 	fmt.Sprintf("Failed: %d", failCount),
+	// 	fmt.Sprintf("Pending: %d", pendCount),
+	// 	fmt.Sprintf("Preempted: %d", preeemptCount),
+	// 	fmt.Sprintf("Stoped: %d", stopCount),
+	// 	fmt.Sprintf("Suspended: %d", suspendCount),
+	// 	fmt.Sprintf("Running: %d", runCount),
+	// 	fmt.Sprintf("Other: %d", otherCount),
+	// 	fmt.Sprintf("Total: %d", totalCount),
+	// })
+	// table.SetFooterAlignment(tablewriter.ALIGN_LEFT)
+	table.AppendBulk(data)
+	table.Render()
+}

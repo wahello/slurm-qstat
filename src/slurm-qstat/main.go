@@ -12,6 +12,7 @@ func main() {
 	var version = flag.Bool("version", false, "Show version information")
 	var filterStr = flag.String("filter", "", "Limit output to filter list")
 	var partitions = flag.Bool("partitions", false, "Show partition information")
+	var nodes = flag.Bool("nodes", false, "Show node information")
 	var jobs = flag.String("jobs", "", "Show jobs")
 	var filter []string
 
@@ -38,7 +39,7 @@ func main() {
 		filter = strings.Split(*filterStr, ",")
 	}
 
-	if !*partitions && *jobs == "" {
+	if !*partitions && *jobs == "" && !*nodes {
 		fmt.Fprint(os.Stderr, "Error: What should be displayed?\n")
 		showHelp()
 		os.Exit(1)
@@ -113,4 +114,16 @@ func main() {
 			printJobStatus(jobInfo, allJobs)
 		}
 	}
+
+	if *nodes {
+		nodeInfo, err := getNodeInformation()
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error: Can't get node information from SLURM: %s\n", err)
+			os.Exit(1)
+		}
+
+		nodeInfo = filterNodes(nodeInfo, filter)
+		printNodeStatus(nodeInfo)
+	}
+
 }
