@@ -28,27 +28,3 @@ const helpText = `Usage: %s [--filter=<part>,...] [--help] --jobs=<filter>|--par
 
     --version                   Show version information
 `
-
-var compactJobState = map[string]string{
-	"BOOT_FAIL":     "BF",
-	"CANCELLED":     "CA",
-	"COMPLETED":     "CD",
-	"COMPLETING":    "CG",
-	"CONFIGURING":   "CF",
-	"DEADLINE":      "DL",
-	"FAILED":        "F",
-	"NODE_FAIL":     "NF",
-	"OUT_OF_MEMORY": "OOM",
-	"PENDING":       "PD",
-	"PREEMPTED":     "PR",
-	"REQUEUED":      "RQ",
-	"REQUEUE_FED":   "RF",
-	"REQUEUE_HOLD":  "RH",
-	"RESIZING":      "RS",
-	"RESV_DEL_HOLD": "RD",
-	"REVOKED":       "RV",
-	"RUNNING":       "R",
-	"SPECIAL_EXIT":  "SE",
-	"STOPPED":       "ST",
-	"SUSPENDED":     "S",
-}
