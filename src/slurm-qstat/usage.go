@@ -11,5 +11,5 @@ func showVersion() {
 
 func showHelp() {
 	showVersion()
-	fmt.Print(helpText)
+	fmt.Printf(helpText, name)
 }

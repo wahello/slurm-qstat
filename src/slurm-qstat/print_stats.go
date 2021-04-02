@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"regexp"
@@ -17,12 +18,6 @@ func printPartitionStatus(p map[string]partitionInfo) {
 	var allocatedSum uint64
 	var otherSum uint64
 	var totalSum uint64
-	/*
-	   var idlePct float64
-	   var allocatedPct float64
-	   var otherPct float64
-	   var totalPct float64
-	*/
 
 	for k := range p {
 		keys = append(keys, k)
@@ -81,6 +76,14 @@ func printPartitionStatus(p map[string]partitionInfo) {
 func printJobStatus(j map[string]jobData, jidList []string) {
 	var reUser = regexp.MustCompile(`\(\d+\)`)
 	var data [][]string
+	var runCount uint64
+	var pendCount uint64
+	var otherCount uint64
+	var totalCount uint64
+	var failCount uint64
+	var preeemptCount uint64
+	var stopCount uint64
+	var suspendCount uint64
 
 	for _, job := range jidList {
 		var host string
@@ -103,6 +106,24 @@ func printJobStatus(j map[string]jobData, jidList []string) {
 		if !found {
 			log.Panicf("BUG: No JobState found for job %s\n", job)
 		}
+
+		switch state {
+		case "FAILED":
+			failCount++
+		case "PENDING":
+			pendCount++
+		case "PREEMPTED":
+			preeemptCount++
+		case "STOPPED":
+			stopCount++
+		case "SUSPENDED":
+			suspendCount++
+		case "RUNNING":
+			runCount++
+		default:
+			otherCount++
+		}
+		totalCount++
 
 		partition, found := jData["Partition"]
 		if !found {
@@ -179,13 +200,25 @@ func printJobStatus(j map[string]jobData, jidList []string) {
 			startTime,
 			name,
 		})
+
 	}
 
 	table := tablewriter.NewWriter(os.Stdout)
 	table.SetHeader([]string{"JobID", "Partition", "User", "State", "Reason", "Host", "CPUs", "Starttime", "Name"})
 	table.SetAutoWrapText(false)
 	table.SetAutoFormatHeaders(true)
-	table.SetFooterAlignment(tablewriter.ALIGN_RIGHT)
+	table.SetFooter([]string{
+		"Sum",
+		fmt.Sprintf("Failed: %d", failCount),
+		fmt.Sprintf("Pending: %d", pendCount),
+		fmt.Sprintf("Preempted: %d", preeemptCount),
+		fmt.Sprintf("Stoped: %d", stopCount),
+		fmt.Sprintf("Suspended: %d", suspendCount),
+		fmt.Sprintf("Running: %d", runCount),
+		fmt.Sprintf("Other: %d", otherCount),
+		fmt.Sprintf("Total: %d", totalCount),
+	})
+	table.SetFooterAlignment(tablewriter.ALIGN_LEFT)
 	table.AppendBulk(data)
 	table.Render()
 }
