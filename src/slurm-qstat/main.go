@@ -20,7 +20,7 @@ func main() {
 	flag.Parse()
 
 	if len(flag.Args()) > 0 {
-		fmt.Fprintf(os.Stderr, "Error: Trailing arguments %s\n", strings.Join(flag.Args(), " "))
+		fmt.Fprintf(os.Stderr, "Error: Trailing arguments %s\n\n", strings.Join(flag.Args(), " "))
 		showHelp()
 		os.Exit(1)
 	}
@@ -40,14 +40,14 @@ func main() {
 	}
 
 	if !*partitions && *jobs == "" && !*nodes {
-		fmt.Fprint(os.Stderr, "Error: What should be displayed?\n")
+		fmt.Fprint(os.Stderr, "Error: What should be displayed?\n\n")
 		showHelp()
 		os.Exit(1)
 	}
 
 	if *jobs != "" {
 		if *jobs != "running" && *jobs != "not-running" && *jobs != "all" {
-			fmt.Fprint(os.Stderr, "Error: Invalid job display filter\n")
+			fmt.Fprint(os.Stderr, "Error: Invalid job display filter\n\n")
 			showHelp()
 			os.Exit(1)
 		}
