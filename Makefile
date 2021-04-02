@@ -27,6 +27,7 @@ clean:
 
 distclean: clean
 	rm -rf src/github.com/
+	rm -rf pkg/
 
 uninstall:
 	/bin/rm -f $(DESTDIR)/usr/bin
