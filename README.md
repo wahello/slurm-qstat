@@ -13,7 +13,7 @@ Additionally the [tablewriter](https://github.com/olekukonko/tablewriter) is req
 
 | *Option* | *Description* | *Note* |
 |:---------|:--------------|:-------|
-| `--filter=<part>,...` | Limit output of jobs, nodes and partitions to the comma separated list of partitions | If not specified, information about jobs, nodes and partitions of all partitions will be displayed |
+| `--filter=<part>,...` | Limit output of to the comma separated list of partitions | If not specified, information about jobs, nodes and partitions of all partitions will be displayed |
 | `--help` | Show the help text | |
 | `--jobs=<filter>` | List information about jobs | Filter is mandatory and can be one of |
 |                   |           |   `all` - show all jobs |
