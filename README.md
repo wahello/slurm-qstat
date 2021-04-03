@@ -6,7 +6,7 @@
 `slurm-qstat` tries to display information about jobs, nodes and partitions of the SLURM queueing system
 
 # Build requirements
-This check is implemented in Go so, obviously, a Go compiler is required.
+This tool is implemented in Go so, obviously, a Go compiler is required.
 Additionally the [tablewriter](https://github.com/olekukonko/tablewriter) is required for the build.
 
 # Command line parameters
