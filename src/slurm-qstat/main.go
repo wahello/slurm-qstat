@@ -14,6 +14,7 @@ func main() {
 	var partitions = flag.Bool("partitions", false, "Show partition information")
 	var nodes = flag.Bool("nodes", false, "Show node information")
 	var jobs = flag.String("jobs", "", "Show jobs")
+	var reservations = flag.Bool("reservations", false, "Show reservations")
 	var filter []string
 
 	flag.Usage = showHelp
@@ -39,7 +40,7 @@ func main() {
 		filter = strings.Split(*filterStr, ",")
 	}
 
-	if !*partitions && *jobs == "" && !*nodes {
+	if !*partitions && *jobs == "" && !*nodes && !*reservations {
 		fmt.Fprint(os.Stderr, "Error: What should be displayed?\n\n")
 		showHelp()
 		os.Exit(1)
@@ -124,6 +125,17 @@ func main() {
 
 		nodeInfo = filterNodes(nodeInfo, filter)
 		printNodeStatus(nodeInfo)
+	}
+
+	if *reservations {
+		rsvInfo, err := getReservations()
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error: Can'T get reservations from SLURM: %s\n", err)
+			os.Exit(1)
+		}
+
+		rsvInfo = filterReservations(rsvInfo, filter)
+		printReservationStatus(rsvInfo)
 	}
 
 }

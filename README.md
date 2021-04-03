@@ -3,7 +3,7 @@
 ----
 
 # Preface
-`slurm-qstat` tries to display information about jobs, nodes and partitions of the SLURM queueing system
+`slurm-qstat` tries to display information about jobs, nodes, partitions and reservations of the SLURM queueing system
 
 # Build requirements
 This tool is implemented in Go so, obviously, a Go compiler is required.
@@ -21,6 +21,7 @@ Additionally the [tablewriter](https://github.com/olekukonko/tablewriter) is req
 |                   |           |   `running` - show only running jobs |
 | `--nodes` | List information about nodes | |
 | `--partitions` | List information about partitions | |
+| `--reservations` | List information about reservations | |
 | `--version` | Show version information |
 
 # Licenses

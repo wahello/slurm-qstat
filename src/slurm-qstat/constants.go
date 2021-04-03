@@ -1,7 +1,7 @@
 package main
 
 const name = "slurm-qstat"
-const version = "1.0.1-20210402"
+const version = "1.1.0"
 
 const versionText = `%s version %s
 Copyright (C) 2021 by Andreas Maus <maus@ypbind.de>
@@ -13,7 +13,7 @@ Public License Version 3. (http://www.gnu.org/copyleft/gpl.html)
 Build with go version: %s
 `
 
-const helpText = `Usage: %s [--filter=<part>,...] [--help] --jobs=<filter>|--nodes|--partitions [--version]
+const helpText = `Usage: %s [--filter=<part>,...] [--help] --jobs=<filter>|--nodes|--partitions|--reservations [--version]
 
     --filter=<part>,...         Limit output to comma separated list of partitions
 
@@ -27,6 +27,8 @@ const helpText = `Usage: %s [--filter=<part>,...] [--help] --jobs=<filter>|--nod
     --nodes                     Show node information
 
     --partitions                Show partition information
+
+    --reservations              Show reservation information
 
     --version                   Show version information
 `

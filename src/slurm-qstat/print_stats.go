@@ -247,6 +247,7 @@ func printNodeStatus(n map[string]nodeData) {
 	var mixedCount uint64
 	var downCount uint64
 	var otherCount uint64
+	var reservedCount uint64
 
 	for node := range n {
 		sorted = append(sorted, node)
@@ -278,6 +279,8 @@ func printNodeStatus(n map[string]nodeData) {
 			mixedCount++
 		} else if strings.Contains(state, "DOWN") {
 			downCount++
+		} else if state == "RESERVED" {
+			reservedCount++
 		} else {
 			otherCount++
 		}
@@ -333,15 +336,185 @@ func printNodeStatus(n map[string]nodeData) {
 	table.SetAutoFormatHeaders(true)
 	table.SetFooter([]string{
 		"Sum",
-		"",
-		fmt.Sprintf("Allocated: %d", allocCount),
 		fmt.Sprintf("Idle: %d", idleCount),
 		fmt.Sprintf("Mixed: %d", mixedCount),
+		fmt.Sprintf("Allocated: %d", allocCount),
+		fmt.Sprintf("Reserved: %d", reservedCount),
 		fmt.Sprintf("Draining: %d", drainingCount),
 		fmt.Sprintf("Drained: %d", drainedCount),
 		fmt.Sprintf("Down: %d", downCount),
 		fmt.Sprintf("Other: %d", otherCount),
 		fmt.Sprintf("Total: %d", totalCount),
+	})
+	table.SetFooterAlignment(tablewriter.ALIGN_LEFT)
+	table.AppendBulk(data)
+	table.Render()
+}
+
+func printReservationStatus(reservation map[string]reservationData) {
+	var data [][]string
+	var nodesCnt uint64
+	var coresCnt uint64
+	var parts = make(map[string]interface{})
+	var activeCnt uint64
+	var otherCnt uint64
+
+	for rsv, rsvData := range reservation {
+		partition, found := rsvData["PartitionName"]
+		if !found {
+			log.Panicf("BUG: PartitionName not found for reservation %s", rsv)
+		}
+		parts[partition] = nil
+
+		state, found := rsvData["State"]
+		if !found {
+			log.Panicf("BUG: State not found for reservation %s", rsv)
+		}
+
+		if state == "ACTIVE" {
+			activeCnt++
+		} else {
+			otherCnt++
+		}
+
+		startTime, found := rsvData["StartTime"]
+		if !found {
+			log.Panicf("BUG: StartTime not found for reservation %s", rsv)
+		}
+
+		endTime, found := rsvData["EndTime"]
+		if !found {
+			log.Panicf("BUG: EndTime not found for reservation %s", rsv)
+		}
+
+		duration, found := rsvData["Duration"]
+		if !found {
+			log.Panicf("BUG: Duration not found for reservation %s", rsv)
+		}
+
+		nodes, found := rsvData["Nodes"]
+		if !found {
+			log.Panicf("BUG: Nodes not found for reservation %s", rsv)
+		}
+
+		nodeCount, found := rsvData["NodeCnt"]
+		if !found {
+			log.Panicf("BUG: NodeCnt not found for reservation %s", rsv)
+		}
+		_nodeCount, err := strconv.ParseUint(nodeCount, 10, 64)
+		if err != nil {
+			log.Panicf("BUG: Can't convert NodeCnt %s to an integer for reservation %s: %s", nodeCount, rsv, err)
+		}
+		nodesCnt += _nodeCount
+
+		coreCount, found := rsvData["CoreCnt"]
+		if !found {
+			log.Panicf("BUG: CoreCnt not found for reservation %s", rsv)
+		}
+		_coreCount, err := strconv.ParseUint(coreCount, 10, 64)
+		if err != nil {
+			log.Panicf("BUG: Can't convert CoreCnt %s to an integer for reservation %s: %s", coreCount, rsv, err)
+		}
+		coresCnt += _coreCount
+
+		features, found := rsvData["Features"]
+		if !found {
+			log.Panicf("BUG: Features not found for reservation %s", rsv)
+		}
+		if features == "(null)" {
+			features = ""
+		}
+
+		flags, found := rsvData["Flags"]
+		if !found {
+			log.Panicf("BUG: Flags not found for reservation %s", rsv)
+		}
+
+		tres, found := rsvData["TRES"]
+		if !found {
+			log.Panicf("BUG: TRES not fund for reservation %s", rsv)
+		}
+
+		users, found := rsvData["Users"]
+		if !found {
+			log.Panicf("BUG: Users not found for reservation %s", rsv)
+		}
+		if users == "(null)" {
+			users = ""
+		}
+
+		accounts, found := rsvData["Accounts"]
+		if !found {
+			log.Panicf("BUG: Accounts not found for reservation %s", rsv)
+		}
+		if accounts == "(null)" {
+			accounts = ""
+		}
+
+		licenses, found := rsvData["Licenses"]
+		if !found {
+			log.Panicf("BUG: Licenses not found for reservation %s", rsv)
+		}
+		if licenses == "(null)" {
+			licenses = ""
+		}
+
+		burstBuffer, found := rsvData["BurstBuffer"]
+		if !found {
+			log.Panicf("BUG: BurstBuffer not found for reservation %s", rsv)
+		}
+		if burstBuffer == "(null)" {
+			burstBuffer = ""
+		}
+
+		watts, found := rsvData["Watts"]
+		if !found {
+			log.Panicf("BUG: Watts not found for reservation %s", rsv)
+		}
+
+		data = append(data, []string{
+			rsv,
+			partition,
+			state,
+			startTime,
+			endTime,
+			duration,
+			nodes,
+			nodeCount,
+			coreCount,
+			features,
+			flags,
+			tres,
+			users,
+			accounts,
+			licenses,
+			burstBuffer,
+			watts,
+		})
+	}
+
+	table := tablewriter.NewWriter(os.Stdout)
+	table.SetHeader([]string{"Name", "Partition", "State", "StartTime", "EndTime", "Duration", "Nodes", "Node count", "Core count", "Features", "Flags", "TRES", "Users", "Accounts", "Licenses", "Burst buffer", "Watts"})
+	table.SetAutoWrapText(false)
+	table.SetAutoFormatHeaders(true)
+	table.SetFooter([]string{
+		"Sum",
+		fmt.Sprintf("Active: %d", activeCnt),
+		fmt.Sprintf("Other: %d", otherCnt),
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		fmt.Sprintf("Nodes: %d", nodesCnt),
+		fmt.Sprintf("Cores: %d", coresCnt),
+		fmt.Sprintf("Partitions: %d", len(parts)),
 	})
 	table.SetFooterAlignment(tablewriter.ALIGN_LEFT)
 	table.AppendBulk(data)
