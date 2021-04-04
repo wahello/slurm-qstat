@@ -16,6 +16,10 @@ func getJobInformation() (map[string]jobData, error) {
 	}
 
 	rawStr := string(raw)
+	if strings.TrimSpace(rawStr) == "No jobs in the system" {
+		return result, nil
+	}
+
 	for _, line := range strings.Split(rawStr, "\n") {
 		// XXX: Remove duplicate white space, because some SLURM versions, like 17.11.6, contain extra white space after CoreSpec=
 		line = regexpWhiteSpace.ReplaceAllString(line, " ")
