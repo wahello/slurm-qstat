@@ -19,7 +19,7 @@ const helpText = `Usage: %s [--filter=<part>,...] [--help] --jobs=<filter>|--nod
 
     --help                      Show this help text
 
-    --jobs=<filter>             Show job information. <filter can be one of:
+    --jobs=<filter>             Show job information. <filter> can be one of:
                                     all         - show all jobs
                                     not-running - show not running only (state other than RUNNING)
                                     running     - show only running jobs (state RUNNING)
