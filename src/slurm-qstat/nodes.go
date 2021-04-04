@@ -45,10 +45,10 @@ func getNodeInformation() (map[string]nodeData, error) {
 			data[key] = string(value)
 		}
 
-		node, found := data["NodeName"]
+		node, found := data["NodeHostName"]
 		// Should never happen!
 		if !found {
-			panic("NodeName not found")
+			panic("NodeHostName not found")
 		}
 
 		result[node] = data

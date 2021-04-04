@@ -262,6 +262,11 @@ func printNodeStatus(n map[string]nodeData) {
 			log.Panicf("BUG: No Partitions for node %s\n", node)
 		}
 
+		nname, found := ndata["NodeName"]
+		if !found {
+			log.Panicf("BUG: No NodeName found for node %s\n", node)
+		}
+
 		state, found := ndata["State"]
 		if !found {
 			log.Panicf("BUG: No State for node %s\n", node)
@@ -317,6 +322,7 @@ func printNodeStatus(n map[string]nodeData) {
 		reason := ndata["Reason"]
 
 		data = append(data, []string{
+			nname,
 			node,
 			partitions,
 			state,
@@ -331,11 +337,12 @@ func printNodeStatus(n map[string]nodeData) {
 	}
 
 	table := tablewriter.NewWriter(os.Stdout)
-	table.SetHeader([]string{"Node", "Partition", "State", "SLURM version", "TRES (configured)", "TRES (allocated)", "Sockets", "Boards", "Threads per core", "Reason"})
+	table.SetHeader([]string{"Node", "Hostname", "Partition", "State", "SLURM version", "TRES (configured)", "TRES (allocated)", "Sockets", "Boards", "Threads per core", "Reason"})
 	table.SetAutoWrapText(false)
 	table.SetAutoFormatHeaders(true)
 	table.SetFooter([]string{
 		"Sum",
+		"",
 		fmt.Sprintf("Idle: %d", idleCount),
 		fmt.Sprintf("Mixed: %d", mixedCount),
 		fmt.Sprintf("Allocated: %d", allocCount),
