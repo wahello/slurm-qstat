@@ -10,16 +10,12 @@ func getJobInformation() (map[string]jobData, error) {
 	var result = make(map[string]jobData)
 	var regexpWhiteSpace = regexp.MustCompile("\\s+")
 
-	raw, err := executeCommand("scontrol", "--details", "--oneliner", "show", "jobs")
+	raw, err := executeCommand("scontrol", "--details", "--oneliner", "--quiet", "show", "jobs")
 	if err != nil {
 		return nil, err
 	}
 
 	rawStr := string(raw)
-	if strings.TrimSpace(rawStr) == "No jobs in the system" {
-		return result, nil
-	}
-
 	for _, line := range strings.Split(rawStr, "\n") {
 		// XXX: Remove duplicate white space, because some SLURM versions, like 17.11.6, contain extra white space after CoreSpec=
 		line = regexpWhiteSpace.ReplaceAllString(line, " ")

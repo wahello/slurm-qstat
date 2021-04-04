@@ -8,13 +8,12 @@ import (
 func getNodeInformation() (map[string]nodeData, error) {
 	var result = make(map[string]nodeData)
 
-	raw, err := executeCommand("scontrol", "show", "--oneliner", "nodes")
+	raw, err := executeCommand("scontrol", "show", "--oneliner", "--quiet", "nodes")
 	if err != nil {
 		return nil, err
 	}
 
 	rawstr := string(raw)
-
 	for _, line := range strings.Split(rawstr, "\n") {
 		// Don't even start to process empty lines
 		if len(line) == 0 {

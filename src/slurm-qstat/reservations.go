@@ -8,17 +8,12 @@ import (
 func getReservations() (map[string]reservationData, error) {
 	var result = make(map[string]reservationData)
 
-	raw, err := executeCommand("scontrol", "show", "--oneliner", "reservations")
+	raw, err := executeCommand("scontrol", "show", "--oneliner", "--quiet", "reservations")
 	if err != nil {
 		return nil, err
 	}
 
 	rawStr := string(raw)
-
-	if strings.TrimSpace(rawStr) == "No reservations in the system" {
-		return result, nil
-	}
-
 	for _, line := range strings.Split(rawStr, "\n") {
 		line = strings.TrimSpace(line)
 
