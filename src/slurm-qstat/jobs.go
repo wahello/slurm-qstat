@@ -56,6 +56,25 @@ func getJobInformation() (map[string]jobData, error) {
 	return result, nil
 }
 
+func massageJobs(jobs map[string]jobData) map[string]jobData {
+	var result = make(map[string]jobData)
+
+	for key, value := range jobs {
+		jstate, found := value["JobState"]
+		// Should never happen!
+		if !found {
+			log.Panicf("BUG: Job %s doesn't have JobState field", key)
+		}
+
+		if jstate == "COMPLETED" {
+			continue
+		}
+
+		result[key] = value
+	}
+	return result
+}
+
 // Weed out COMPLETED jobs, return list of pending and non-pending jobs
 func splitByPendState(jobs map[string]jobData) ([]string, []string) {
 	var pending []string
@@ -66,10 +85,6 @@ func splitByPendState(jobs map[string]jobData) ([]string, []string) {
 		// Should never happen!
 		if !found {
 			log.Panicf("BUG: Job %s doesn't have JobState field", jobID)
-		}
-
-		if jstate == "COMPLETED" {
-			continue
 		}
 
 		if jstate == "PENDING" {

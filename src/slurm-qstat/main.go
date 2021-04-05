@@ -79,6 +79,8 @@ func main() {
 
 		jobInfo = filterJobs(jobInfo, filter)
 
+		jobInfo = massageJobs(jobInfo)
+
 		if *jobs == "running" {
 			_, notPending := splitByPendState(jobInfo)
 
