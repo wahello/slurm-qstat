@@ -259,7 +259,8 @@ func printNodeStatus(n map[string]nodeData) {
 
 		partitions, found := ndata["Partitions"]
 		if !found {
-			log.Panicf("BUG: No Partitions for node %s\n", node)
+			// Note: Although seldom configured, it is a valid configuration to define a node in SLURM without assiging it to a partition
+			partitions = ""
 		}
 
 		nname, found := ndata["NodeName"]
