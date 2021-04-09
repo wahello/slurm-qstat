@@ -4,7 +4,7 @@ depend:
 	# go mod will handle dependencies
 
 build:
-	cd $(CURDIR)/src/slurm-qstat && go build -o $(CURDIR)/bin/slurm-qstat
+	cd $(CURDIR)/src/slurm-qstat && slurm-qstat/src/slurm-qstat && go build -o $(CURDIR)/bin/slurm-qstat
 
 destdirs:
 	mkdir -p -m 0755 $(DESTDIR)/usr/bin

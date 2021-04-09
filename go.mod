@@ -1,4 +1,4 @@
-module src/slurm-qstat
+module slurm-qstat
 
 go 1.15
 
