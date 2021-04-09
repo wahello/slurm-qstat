@@ -1,7 +1,6 @@
 package main
 
 import (
-	"log"
 	"strings"
 )
 
@@ -104,7 +103,8 @@ func filterNodes(nodes map[string]nodeData, filter []string) map[string]nodeData
 	for key, value := range nodes {
 		partitions, found := value["Partitions"]
 		if !found {
-			log.Panicf("BUG: No Partitions found for node %s\n", key)
+			// Note: It is a valid, although rare, configuration to defined nodes *without* defining any partitions for these nodes.
+			partitions = ""
 		}
 
 		partList := splitNodePartitionString(partitions)
