@@ -1,7 +1,7 @@
 BINDIR	= $(CURDIR)/bin
 
 depend:
-	# go mod fill handle dependencies
+	# go mod will handle dependencies
 
 build:
 	cd $(CURDIR)/src/slurm-qstat && go get slurm-qstat/src/slurm-qstat && go build -o $(CURDIR)/bin/slurm-qstat

@@ -12,3 +12,4 @@ samples/
 *.rej
 *.pb.go
 
+go.sum
