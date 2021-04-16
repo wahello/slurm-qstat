@@ -1,11 +1,10 @@
-GOPATH	= $(CURDIR)
 BINDIR	= $(CURDIR)/bin
 
 depend:
-	env GOPATH=$(GOPATH) go get -u github.com/olekukonko/tablewriter
+	# go mod fill handle dependencies
 
 build:
-	env GOPATH=$(GOPATH) go install slurm-qstat
+	cd $(CURDIR)/src/slurm-qstat && go get slurm-qstat/src/slurm-qstat && go build -o $(CURDIR)/bin/slurm-qstat
 
 destdirs:
 	mkdir -p -m 0755 $(DESTDIR)/usr/bin
