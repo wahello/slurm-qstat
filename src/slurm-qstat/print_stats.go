@@ -155,6 +155,21 @@ func printJobStatus(j map[string]jobData, jidList []string) {
 			nodes = ""
 		}
 
+		licenses := jData["Licenses"]
+		if licenses == "(null)" {
+			licenses = ""
+		}
+
+		gres := jData["Gres"]
+		if gres == "(null)" {
+			gres = ""
+		}
+
+		tres = jData["TRES"]
+		if tres == "(null}" {
+			tres = ""
+		}
+
 		if state == "PENDING" {
 			// Jobs can also be submitted, requesting a number of Nodes instead of CPUs
 			// Therefore we will check TRES first
@@ -209,6 +224,9 @@ func printJobStatus(j map[string]jobData, jidList []string) {
 			host,
 			nodes,
 			strconv.FormatUint(numCpus, 10),
+			licenses,
+			gres,
+			tres,
 			startTime,
 			name,
 		})
@@ -216,11 +234,14 @@ func printJobStatus(j map[string]jobData, jidList []string) {
 	}
 
 	table := tablewriter.NewWriter(os.Stdout)
-	table.SetHeader([]string{"JobID", "Partition", "User", "State", "Reason", "Batchhost", "Nodes", "CPUs", "Starttime", "Name"})
+	table.SetHeader([]string{"JobID", "Partition", "User", "State", "Reason", "Batchhost", "Nodes", "CPUs", "Licenses", "GRES", "TRES", "Starttime", "Name"})
 	table.SetAutoWrapText(false)
 	table.SetAutoFormatHeaders(true)
 	table.SetFooter([]string{
 		"Sum",
+		"",
+		"",
+		"",
 		"",
 		fmt.Sprintf("Failed: %d", failCount),
 		fmt.Sprintf("Pending: %d", pendCount),
