@@ -12,7 +12,7 @@ import (
 	"github.com/olekukonko/tablewriter"
 )
 
-func printPartitionStatus(p map[string]partitionInfo) {
+func printPartitionStatus(p map[string]partitionInfo, brief bool) {
 	var data [][]string
 	var keys []string
 	var idleSum uint64
@@ -37,44 +37,65 @@ func printPartitionStatus(p map[string]partitionInfo) {
 		otherSum += value.CoresOther
 		totalSum += value.CoresTotal
 
-		data = append(data, []string{
-			key,
+		if brief {
+			data = append(data, []string{
+				key,
 
-			strconv.FormatUint(value.CoresIdle, 10),
-			strconv.FormatUint(value.CoresAllocated, 10),
-			strconv.FormatUint(value.CoresOther, 10),
-			strconv.FormatUint(value.CoresTotal, 10),
+				strconv.FormatUint(value.CoresIdle, 10),
+				strconv.FormatUint(value.CoresAllocated, 10),
+				strconv.FormatUint(value.CoresOther, 10),
+				strconv.FormatUint(value.CoresTotal, 10),
+			})
+		} else {
+			data = append(data, []string{
+				key,
 
-			strconv.FormatFloat(float64(value.CoresIdle)/float64(value.CoresTotal)*100.0, 'f', 3, 64),
-			strconv.FormatFloat(float64(value.CoresAllocated)/float64(value.CoresTotal)*100.0, 'f', 3, 64),
-			strconv.FormatFloat(float64(value.CoresOther)/float64(value.CoresTotal)*100.0, 'f', 3, 64),
-			strconv.FormatFloat(100.0, 'f', 3, 64),
-		})
+				strconv.FormatUint(value.CoresIdle, 10),
+				strconv.FormatUint(value.CoresAllocated, 10),
+				strconv.FormatUint(value.CoresOther, 10),
+				strconv.FormatUint(value.CoresTotal, 10),
+
+				strconv.FormatFloat(float64(value.CoresIdle)/float64(value.CoresTotal)*100.0, 'f', 3, 64),
+				strconv.FormatFloat(float64(value.CoresAllocated)/float64(value.CoresTotal)*100.0, 'f', 3, 64),
+				strconv.FormatFloat(float64(value.CoresOther)/float64(value.CoresTotal)*100.0, 'f', 3, 64),
+				strconv.FormatFloat(100.0, 'f', 3, 64),
+			})
+		}
 	}
 
 	table := tablewriter.NewWriter(os.Stdout)
-	table.SetHeader([]string{"Partition", "Idle", "Allocated", "Other", "Total", "Idle%", "Allocated%", "Other%", "Total%"})
+
+	if brief {
+		table.SetHeader([]string{"Partition", "Idle", "Allocated", "Other", "Total"})
+	} else {
+		table.SetHeader([]string{"Partition", "Idle", "Allocated", "Other", "Total", "Idle%", "Allocated%", "Other%", "Total%"})
+	}
+
 	table.SetAutoWrapText(false)
 	table.SetAutoFormatHeaders(true)
-	table.SetFooter([]string{
-		"Sum",
-		strconv.FormatUint(idleSum, 10),
-		strconv.FormatUint(allocatedSum, 10),
-		strconv.FormatUint(otherSum, 10),
-		strconv.FormatUint(totalSum, 10),
 
-		strconv.FormatFloat(float64(idleSum)/float64(totalSum)*100.0, 'f', 3, 64),
-		strconv.FormatFloat(float64(allocatedSum)/float64(totalSum)*100.0, 'f', 3, 64),
-		strconv.FormatFloat(float64(otherSum)/float64(totalSum)*100.0, 'f', 3, 64),
-		strconv.FormatFloat(100.0, 'f', 3, 64),
-	})
-	table.SetFooterAlignment(tablewriter.ALIGN_RIGHT)
+	if !brief {
+		table.SetFooter([]string{
+			"Sum",
+			strconv.FormatUint(idleSum, 10),
+			strconv.FormatUint(allocatedSum, 10),
+			strconv.FormatUint(otherSum, 10),
+			strconv.FormatUint(totalSum, 10),
+
+			strconv.FormatFloat(float64(idleSum)/float64(totalSum)*100.0, 'f', 3, 64),
+			strconv.FormatFloat(float64(allocatedSum)/float64(totalSum)*100.0, 'f', 3, 64),
+			strconv.FormatFloat(float64(otherSum)/float64(totalSum)*100.0, 'f', 3, 64),
+			strconv.FormatFloat(100.0, 'f', 3, 64),
+		})
+		table.SetFooterAlignment(tablewriter.ALIGN_RIGHT)
+	}
+
 	table.AppendBulk(data)
 	table.Render()
 
 }
 
-func printJobStatus(j map[string]jobData, jidList []string) {
+func printJobStatus(j map[string]jobData, jidList []string, brief bool) {
 	var reUser = regexp.MustCompile(`\(\d+\)`)
 	var data [][]string
 	var runCount uint64
@@ -215,49 +236,71 @@ func printJobStatus(j map[string]jobData, jidList []string) {
 			}
 		}
 
-		data = append(data, []string{
-			job,
-			partition,
-			user,
-			state,
-			pendingReason,
-			host,
-			nodes,
-			strconv.FormatUint(numCpus, 10),
-			licenses,
-			gres,
-			tres,
-			startTime,
-			name,
-		})
-
+		if brief {
+			data = append(data, []string{
+				job,
+				partition,
+				user,
+				state,
+				nodes,
+				strconv.FormatUint(numCpus, 10),
+				startTime,
+				name,
+			})
+		} else {
+			data = append(data, []string{
+				job,
+				partition,
+				user,
+				state,
+				pendingReason,
+				host,
+				nodes,
+				strconv.FormatUint(numCpus, 10),
+				licenses,
+				gres,
+				tres,
+				startTime,
+				name,
+			})
+		}
 	}
 
 	table := tablewriter.NewWriter(os.Stdout)
-	table.SetHeader([]string{"JobID", "Partition", "User", "State", "Reason", "Batchhost", "Nodes", "CPUs", "Licenses", "GRES", "TRES", "Starttime", "Name"})
+
+	if brief {
+		table.SetHeader([]string{"JobID", "Partition", "User", "State", "Nodes", "CPUs", "Starttime", "Name"})
+	} else {
+		table.SetHeader([]string{"JobID", "Partition", "User", "State", "Reason", "Batchhost", "Nodes", "CPUs", "Licenses", "GRES", "TRES", "Starttime", "Name"})
+	}
+
 	table.SetAutoWrapText(false)
 	table.SetAutoFormatHeaders(true)
-	table.SetFooter([]string{
-		"Sum",
-		"",
-		"",
-		"",
-		"",
-		fmt.Sprintf("Failed: %d", failCount),
-		fmt.Sprintf("Pending: %d", pendCount),
-		fmt.Sprintf("Preempted: %d", preeemptCount),
-		fmt.Sprintf("Stoped: %d", stopCount),
-		fmt.Sprintf("Suspended: %d", suspendCount),
-		fmt.Sprintf("Running: %d", runCount),
-		fmt.Sprintf("Other: %d", otherCount),
-		fmt.Sprintf("Total: %d", totalCount),
-	})
-	table.SetFooterAlignment(tablewriter.ALIGN_LEFT)
+
+	if !brief {
+		table.SetFooter([]string{
+			"Sum",
+			"",
+			"",
+			"",
+			"",
+			fmt.Sprintf("Failed: %d", failCount),
+			fmt.Sprintf("Pending: %d", pendCount),
+			fmt.Sprintf("Preempted: %d", preeemptCount),
+			fmt.Sprintf("Stoped: %d", stopCount),
+			fmt.Sprintf("Suspended: %d", suspendCount),
+			fmt.Sprintf("Running: %d", runCount),
+			fmt.Sprintf("Other: %d", otherCount),
+			fmt.Sprintf("Total: %d", totalCount),
+		})
+		table.SetFooterAlignment(tablewriter.ALIGN_LEFT)
+	}
+
 	table.AppendBulk(data)
 	table.Render()
 }
 
-func printNodeStatus(n map[string]nodeData) {
+func printNodeStatus(n map[string]nodeData, brief bool) {
 	var data [][]string
 	var sorted []string
 	var totalCount uint64
@@ -343,44 +386,64 @@ func printNodeStatus(n map[string]nodeData) {
 
 		reason := ndata["Reason"]
 
-		data = append(data, []string{
-			nname,
-			node,
-			partitions,
-			state,
-			version,
-			cfgTres,
-			allocTres,
-			sockets,
-			boards,
-			tpc,
-			reason,
-		})
+		if brief {
+			data = append(data, []string{
+				nname,
+				node,
+				partitions,
+				state,
+				reason,
+			})
+		} else {
+			data = append(data, []string{
+				nname,
+				node,
+				partitions,
+				state,
+				version,
+				cfgTres,
+				allocTres,
+				sockets,
+				boards,
+				tpc,
+				reason,
+			})
+		}
 	}
 
 	table := tablewriter.NewWriter(os.Stdout)
-	table.SetHeader([]string{"Node", "Hostname", "Partition", "State", "SLURM version", "TRES (configured)", "TRES (allocated)", "Sockets", "Boards", "Threads per core", "Reason"})
+
+	if brief {
+		table.SetHeader([]string{"Node", "Hostname", "Partition", "State", "Reason"})
+	} else {
+		table.SetHeader([]string{"Node", "Hostname", "Partition", "State", "SLURM version", "TRES (configured)", "TRES (allocated)", "Sockets", "Boards", "Threads per core", "Reason"})
+	}
+
 	table.SetAutoWrapText(false)
 	table.SetAutoFormatHeaders(true)
-	table.SetFooter([]string{
-		"Sum",
-		"",
-		fmt.Sprintf("Idle: %d", idleCount),
-		fmt.Sprintf("Mixed: %d", mixedCount),
-		fmt.Sprintf("Allocated: %d", allocCount),
-		fmt.Sprintf("Reserved: %d", reservedCount),
-		fmt.Sprintf("Draining: %d", drainingCount),
-		fmt.Sprintf("Drained: %d", drainedCount),
-		fmt.Sprintf("Down: %d", downCount),
-		fmt.Sprintf("Other: %d", otherCount),
-		fmt.Sprintf("Total: %d", totalCount),
-	})
-	table.SetFooterAlignment(tablewriter.ALIGN_LEFT)
+
+	if !brief {
+		table.SetFooter([]string{
+			"Sum",
+			"",
+			fmt.Sprintf("Idle: %d", idleCount),
+			fmt.Sprintf("Mixed: %d", mixedCount),
+			fmt.Sprintf("Allocated: %d", allocCount),
+			fmt.Sprintf("Reserved: %d", reservedCount),
+			fmt.Sprintf("Draining: %d", drainingCount),
+			fmt.Sprintf("Drained: %d", drainedCount),
+			fmt.Sprintf("Down: %d", downCount),
+			fmt.Sprintf("Other: %d", otherCount),
+			fmt.Sprintf("Total: %d", totalCount),
+		})
+		table.SetFooterAlignment(tablewriter.ALIGN_LEFT)
+	}
+
 	table.AppendBulk(data)
 	table.Render()
 }
 
-func printReservationStatus(reservation map[string]reservationData) {
+func printReservationStatus(reservation map[string]reservationData, brief bool) {
 	var data [][]string
 	var nodesCnt uint64
 	var coresCnt uint64
@@ -501,51 +564,74 @@ func printReservationStatus(reservation map[string]reservationData) {
 			log.Panicf("BUG: Watts not found for reservation %s", rsv)
 		}
 
-		data = append(data, []string{
-			rsv,
-			partition,
-			state,
-			startTime,
-			endTime,
-			duration,
-			nodes,
-			nodeCount,
-			coreCount,
-			features,
-			flags,
-			tres,
-			users,
-			accounts,
-			licenses,
-			burstBuffer,
-			watts,
-		})
+		if brief {
+			data = append(data, []string{
+				rsv,
+				partition,
+				state,
+				startTime,
+				endTime,
+				duration,
+				nodes,
+				users,
+			})
+		} else {
+			data = append(data, []string{
+				rsv,
+				partition,
+				state,
+				startTime,
+				endTime,
+				duration,
+				nodes,
+				nodeCount,
+				coreCount,
+				features,
+				flags,
+				tres,
+				users,
+				accounts,
+				licenses,
+				burstBuffer,
+				watts,
+			})
+		}
 	}
 
 	table := tablewriter.NewWriter(os.Stdout)
-	table.SetHeader([]string{"Name", "Partition", "State", "StartTime", "EndTime", "Duration", "Nodes", "Node count", "Core count", "Features", "Flags", "TRES", "Users", "Accounts", "Licenses", "Burst buffer", "Watts"})
+
+	if brief {
+		table.SetHeader([]string{"Name", "Partition", "State", "StartTime", "EndTime", "Duration", "Nodes", "Users"})
+	} else {
+		table.SetHeader([]string{"Name", "Partition", "State", "StartTime", "EndTime", "Duration", "Nodes", "Node count", "Core count", "Features", "Flags", "TRES", "Users", "Accounts", "Licenses", "Burst buffer", "Watts"})
+	}
+
 	table.SetAutoWrapText(false)
 	table.SetAutoFormatHeaders(true)
-	table.SetFooter([]string{
-		"Sum",
-		fmt.Sprintf("Active: %d", activeCnt),
-		fmt.Sprintf("Other: %d", otherCnt),
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-		fmt.Sprintf("Nodes: %d", nodesCnt),
-		fmt.Sprintf("Cores: %d", coresCnt),
-		fmt.Sprintf("Partitions: %d", len(parts)),
-	})
-	table.SetFooterAlignment(tablewriter.ALIGN_LEFT)
+
+	if !brief {
+		table.SetFooter([]string{
+			"Sum",
+			fmt.Sprintf("Active: %d", activeCnt),
+			fmt.Sprintf("Other: %d", otherCnt),
+			"",
+			"",
+			"",
+			"",
+			"",
+			"",
+			"",
+			"",
+			"",
+			"",
+			"",
+			fmt.Sprintf("Nodes: %d", nodesCnt),
+			fmt.Sprintf("Cores: %d", coresCnt),
+			fmt.Sprintf("Partitions: %d", len(parts)),
+		})
+		table.SetFooterAlignment(tablewriter.ALIGN_LEFT)
+	}
+
 	table.AppendBulk(data)
 	table.Render()
 }

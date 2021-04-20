@@ -15,6 +15,7 @@ func main() {
 	var nodes = flag.Bool("nodes", false, "Show node information")
 	var jobs = flag.String("jobs", "", "Show jobs")
 	var reservations = flag.Bool("reservations", false, "Show reservations")
+	var brief = flag.Bool("brief", false, "Show brief output")
 	var filter []string
 
 	flag.Usage = showHelp
@@ -67,7 +68,7 @@ func main() {
 			os.Exit(1)
 		}
 
-		printPartitionStatus(partInfo)
+		printPartitionStatus(partInfo, *brief)
 	}
 
 	if *jobs != "" {
@@ -90,7 +91,7 @@ func main() {
 				panic(err)
 			}
 
-			printJobStatus(jobInfo, notPending)
+			printJobStatus(jobInfo, notPending, *brief)
 		} else if *jobs == "not-running" {
 			pending, _ := splitByPendState(jobInfo)
 
@@ -100,7 +101,7 @@ func main() {
 				panic(err)
 			}
 
-			printJobStatus(jobInfo, pending)
+			printJobStatus(jobInfo, pending, *brief)
 		} else {
 			// show all jobs
 			var all []string
@@ -114,7 +115,7 @@ func main() {
 				panic(err)
 			}
 
-			printJobStatus(jobInfo, allJobs)
+			printJobStatus(jobInfo, allJobs, *brief)
 		}
 	}
 
@@ -126,7 +127,7 @@ func main() {
 		}
 
 		nodeInfo = filterNodes(nodeInfo, filter)
-		printNodeStatus(nodeInfo)
+		printNodeStatus(nodeInfo, *brief)
 	}
 
 	if *reservations {
@@ -137,7 +138,7 @@ func main() {
 		}
 
 		rsvInfo = filterReservations(rsvInfo, filter)
-		printReservationStatus(rsvInfo)
+		printReservationStatus(rsvInfo, *brief)
 	}
 
 }
