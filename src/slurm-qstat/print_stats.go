@@ -226,13 +226,17 @@ func printJobStatus(j map[string]jobData, jidList []string, brief bool) {
 
 		} else {
 			host, found = jData["BatchHost"]
-			if !found {
-				log.Panicf("BUG: No BatchHost set for job %s\n", job)
+			if state != "RUNNING" {
+				if !found {
+					log.Panicf("BUG: No BatchHost set for job %s\n", job)
+				}
 			}
 
 			startTime, found = jData["StartTime"]
-			if !found {
-				log.Panicf("BUG: No StartTime set for job %s\n", job)
+			if state != "RUNNING" {
+				if !found {
+					log.Panicf("BUG: No StartTime set for job %s\n", job)
+				}
 			}
 		}
 
