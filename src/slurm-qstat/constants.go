@@ -1,7 +1,7 @@
 package main
 
 const name = "slurm-qstat"
-const version = "1.3.1"
+const version = "1.3.2"
 
 const versionText = `%s version %s
 Copyright (C) 2021 by Andreas Maus <maus@ypbind.de>
