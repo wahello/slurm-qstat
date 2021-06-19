@@ -95,7 +95,7 @@ func printPartitionStatus(p map[string]partitionInfo, brief bool) {
 
 }
 
-func printJobStatus(j map[string]jobData, jidList []string, brief bool) {
+func printJobStatus(j []jobData, brief bool) {
 	var reUser = regexp.MustCompile(`\(\d+\)`)
 	var data [][]string
 	var runCount uint64
@@ -107,14 +107,14 @@ func printJobStatus(j map[string]jobData, jidList []string, brief bool) {
 	var stopCount uint64
 	var suspendCount uint64
 
-	for _, job := range jidList {
+	for _, jData := range j {
 		var host string
 		var startTime string
 		var pendingReason string
 
-		jData, found := j[job]
+		job, found := jData["JobId"]
 		if !found {
-			log.Panicf("BUG: No job data found for job %s\n", job)
+			log.Panic("BUG: No job ID found for job\n")
 		}
 
 		user, found := jData["UserId"]
@@ -304,9 +304,8 @@ func printJobStatus(j map[string]jobData, jidList []string, brief bool) {
 	table.Render()
 }
 
-func printNodeStatus(n map[string]nodeData, brief bool) {
+func printNodeStatus(n []nodeData, brief bool) {
 	var data [][]string
-	var sorted []string
 	var totalCount uint64
 	var allocCount uint64
 	var drainingCount uint64
@@ -317,14 +316,7 @@ func printNodeStatus(n map[string]nodeData, brief bool) {
 	var otherCount uint64
 	var reservedCount uint64
 
-	for node := range n {
-		sorted = append(sorted, node)
-	}
-	sort.Strings(sorted)
-
-	for _, node := range sorted {
-		ndata := n[node]
-
+	for _, ndata := range n {
 		partitions, found := ndata["Partitions"]
 		if !found {
 			// Note: Although seldom configured, it is a valid configuration to define a node in SLURM without assiging it to a partition
@@ -333,8 +325,9 @@ func printNodeStatus(n map[string]nodeData, brief bool) {
 
 		nname, found := ndata["NodeName"]
 		if !found {
-			log.Panicf("BUG: No NodeName found for node %s\n", node)
+			log.Panicf("BUG: No NodeName found for node %+v\n", ndata)
 		}
+		node := nname
 
 		state, found := ndata["State"]
 		if !found {

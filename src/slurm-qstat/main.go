@@ -16,6 +16,7 @@ func main() {
 	var jobs = flag.String("jobs", "", "Show jobs")
 	var reservations = flag.Bool("reservations", false, "Show reservations")
 	var brief = flag.Bool("brief", false, "Show brief output")
+	var sortby = flag.String("sort", "", "Sort output by fields")
 	var filter []string
 
 	flag.Usage = showHelp
@@ -55,6 +56,12 @@ func main() {
 		}
 	}
 
+	sortFlag, err := buildSortFlag(*sortby)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error: Can't parse sort string: %s", err)
+		os.Exit(1)
+	}
+
 	if *partitions {
 		nodeInfo, err := getNodeInformation()
 		if err != nil {
@@ -72,51 +79,35 @@ func main() {
 	}
 
 	if *jobs != "" {
-		jobInfo, err := getJobInformation()
+		_jobInfo, err := getJobInformation()
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Error: Can't get job data from SLURM: %s\n", err)
 			os.Exit(1)
 		}
 
-		jobInfo = filterJobs(jobInfo, filter)
+		_jobInfo = filterJobs(_jobInfo, filter)
+		_jobInfo = massageJobs(_jobInfo)
 
-		jobInfo = massageJobs(jobInfo)
+		var displayJobs []string
 
 		if *jobs == "running" {
-			_, notPending := splitByPendState(jobInfo)
-
-			notPending, err = sortByNumber(notPending)
-			if err != nil {
-				// Should never happen!
-				panic(err)
-			}
-
-			printJobStatus(jobInfo, notPending, *brief)
+			_, displayJobs = splitByPendState(_jobInfo)
 		} else if *jobs == "not-running" {
-			pending, _ := splitByPendState(jobInfo)
-
-			pending, err = sortByNumber(pending)
-			if err != nil {
-				// Should never happen!
-				panic(err)
-			}
-
-			printJobStatus(jobInfo, pending, *brief)
+			displayJobs, _ = splitByPendState(_jobInfo)
 		} else {
-			// show all jobs
-			var all []string
-			for key := range jobInfo {
-				all = append(all, key)
+			for k := range _jobInfo {
+				displayJobs = append(displayJobs, k)
 			}
-
-			allJobs, err := sortByNumber(all)
-			if err != nil {
-				// Should never happen!
-				panic(err)
-			}
-
-			printJobStatus(jobInfo, allJobs, *brief)
 		}
+
+		// only keep job data for jobs to be displayed
+		var jobInfo = make(map[string]jobData)
+		for _, j := range displayJobs {
+			jobInfo[j] = _jobInfo[j]
+		}
+
+		jobInfoSorted := sortJobs(jobInfo, uint8(sortFlag&sortJobsMask))
+		printJobStatus(jobInfoSorted, *brief)
 	}
 
 	if *nodes {
@@ -126,8 +117,8 @@ func main() {
 			os.Exit(1)
 		}
 
-		nodeInfo = filterNodes(nodeInfo, filter)
-		printNodeStatus(nodeInfo, *brief)
+		nodeInfoSorted := sortNodes(filterNodes(nodeInfo, filter), uint8(sortFlag&sortNodesMask))
+		printNodeStatus(nodeInfoSorted, *brief)
 	}
 
 	if *reservations {
