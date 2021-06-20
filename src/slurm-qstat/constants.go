@@ -71,6 +71,14 @@ const helpText = `Usage: %s [--brief] [--filter=<part>,...] [--help] --jobs=<fil
                                             tresconfigured - sort by configured TRES
 
                                         partitions:
+                                            allocated - sort by allocated nodes
+                                            allocatedpercent - sort by allocation percentage
+                                            idle - sort by idle nodes
+                                            idlepercent - sort by idle percentage
+                                            other - sort by other nodes
+                                            otherpercent - sort by percentage of other nodes
+                                            partition - sort by partition name (this is the default)
+                                            total - sort by total nodes
 
                                         reservations:
 
@@ -79,6 +87,18 @@ const helpText = `Usage: %s [--brief] [--filter=<part>,...] [--help] --jobs=<fil
 
 const sortReverse uint8 = 0x80
 const maskSortReverse uint8 = 0x7f
+
+const sortPartitionsMask uint32 = 0x00ff0000
+const (
+	sortPartitionsByPartition uint8 = iota
+	sortPartitionsByAllocated
+	sortPartitionsByAllocatedPercent
+	sortPartitionsByIdle
+	sortPartitionsByIdlePercent
+	sortPartitionsByOther
+	sortPartitionsByOtherPercent
+	sortPartitionsByTotal
+)
 
 const sortNodesMask uint32 = 0x000000ff
 const (

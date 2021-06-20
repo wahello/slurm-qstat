@@ -5,33 +5,20 @@ import (
 	"log"
 	"os"
 	"regexp"
-	"sort"
 	"strconv"
 	"strings"
 
 	"github.com/olekukonko/tablewriter"
 )
 
-func printPartitionStatus(p map[string]partitionInfo, brief bool) {
+func printPartitionStatus(p []partitionInfo, brief bool) {
 	var data [][]string
-	var keys []string
 	var idleSum uint64
 	var allocatedSum uint64
 	var otherSum uint64
 	var totalSum uint64
 
-	for k := range p {
-		keys = append(keys, k)
-	}
-	sort.Strings(keys)
-
-	for _, key := range keys {
-		value, found := p[key]
-		// Will never happen
-		if !found {
-			log.Panicf("BUG: No entry found for partition %s\n", key)
-		}
-
+	for _, value := range p {
 		idleSum += value.CoresIdle
 		allocatedSum += value.CoresAllocated
 		otherSum += value.CoresOther
@@ -39,25 +26,31 @@ func printPartitionStatus(p map[string]partitionInfo, brief bool) {
 
 		if brief {
 			data = append(data, []string{
-				key,
-
+				value.Name,
 				strconv.FormatUint(value.CoresIdle, 10),
 				strconv.FormatUint(value.CoresAllocated, 10),
 				strconv.FormatUint(value.CoresOther, 10),
 				strconv.FormatUint(value.CoresTotal, 10),
 			})
 		} else {
-			data = append(data, []string{
-				key,
+			var ipct float64
+			var apct float64
+			var opct float64
 
+			if value.CoresTotal != 0 {
+				ipct = 100.0 * float64(value.CoresIdle) / float64(value.CoresTotal)
+				apct = 100.0 * float64(value.CoresAllocated) / float64(value.CoresTotal)
+				opct = 100.0 * float64(value.CoresOther) / float64(value.CoresTotal)
+			}
+			data = append(data, []string{
+				value.Name,
 				strconv.FormatUint(value.CoresIdle, 10),
 				strconv.FormatUint(value.CoresAllocated, 10),
 				strconv.FormatUint(value.CoresOther, 10),
 				strconv.FormatUint(value.CoresTotal, 10),
-
-				strconv.FormatFloat(float64(value.CoresIdle)/float64(value.CoresTotal)*100.0, 'f', 3, 64),
-				strconv.FormatFloat(float64(value.CoresAllocated)/float64(value.CoresTotal)*100.0, 'f', 3, 64),
-				strconv.FormatFloat(float64(value.CoresOther)/float64(value.CoresTotal)*100.0, 'f', 3, 64),
+				strconv.FormatFloat(ipct, 'f', 3, 64),
+				strconv.FormatFloat(apct, 'f', 3, 64),
+				strconv.FormatFloat(opct, 'f', 3, 64),
 				strconv.FormatFloat(100.0, 'f', 3, 64),
 			})
 		}

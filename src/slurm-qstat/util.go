@@ -98,6 +98,7 @@ func buildSortFlag(s string) (uint32, error) {
 			if _rev {
 				n |= sortReverse
 			}
+
 		case "jobs":
 			j, err = buildSortFlagJobs(by)
 			if err != nil {
@@ -106,8 +107,18 @@ func buildSortFlag(s string) (uint32, error) {
 			if _rev {
 				j |= sortReverse
 			}
+
 		case "partitions":
+			p, err = buildSortFlagPartitions(by)
+			if err != nil {
+				return fl, err
+			}
+			if _rev {
+				p |= sortReverse
+			}
+
 		case "reservations":
+
 		default:
 			return fl, fmt.Errorf("Invalid sorting object to sort %s", s)
 		}
@@ -115,6 +126,31 @@ func buildSortFlag(s string) (uint32, error) {
 
 	fl = uint32(r)<<24 + uint32(p)<<16 + uint32(j)<<8 + uint32(n)
 	return fl, nil
+}
+
+func buildSortFlagPartitions(s string) (uint8, error) {
+	var n uint8
+	switch s {
+	case "partition":
+		n = sortPartitionsByPartition
+	case "allocated":
+		n = sortPartitionsByAllocated
+	case "allocatedpercent":
+		n = sortPartitionsByAllocatedPercent
+	case "idle":
+		n = sortPartitionsByIdle
+	case "idlepercent":
+		n = sortPartitionsByIdlePercent
+	case "other":
+		n = sortPartitionsByOther
+	case "otherpercent":
+		n = sortPartitionsByOtherPercent
+	case "total":
+		n = sortPartitionsByTotal
+	default:
+		return n, fmt.Errorf("Invalid sort field %s for partitions", s)
+	}
+	return n, nil
 }
 
 func buildSortFlagJobs(s string) (uint8, error) {

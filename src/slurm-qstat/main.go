@@ -70,12 +70,13 @@ func main() {
 			os.Exit(1)
 		}
 
-		partInfo, err := getPartitionInformation(nodeInfo, filter)
+		_partInfo, err := getPartitionInformation(nodeInfo, filter)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Error: Can't get partition information from SLURM: %s\n", err)
 			os.Exit(1)
 		}
 
+		partInfo := sortPartitions(_partInfo, uint8((sortFlag&sortPartitionsMask)>>16))
 		printPartitionStatus(partInfo, *brief)
 	}
 
@@ -107,7 +108,7 @@ func main() {
 			jobInfo[j] = _jobInfo[j]
 		}
 
-		jobInfoSorted := sortJobs(jobInfo, uint8(sortFlag&sortJobsMask>>8))
+		jobInfoSorted := sortJobs(jobInfo, uint8((sortFlag&sortJobsMask)>>8))
 		printJobStatus(jobInfoSorted, *brief)
 	}
 
