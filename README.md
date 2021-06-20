@@ -23,7 +23,90 @@ Additionally the [tablewriter](https://github.com/olekukonko/tablewriter) is req
 | `--nodes` | List information about nodes | |
 | `--partitions` | List information about partitions | |
 | `--reservations` | List information about reservations | |
-| `--version` | Show version information |
+| `--sort=<sort>` | Sort output by field <sort> in ascending order | see documentation below |
+| `--version` | Show version information | |
+
+## Sorting output
+Output can be sorted using the `--sort=<sort>` option. `<sort>` is a comma separated list of `<object>:<field>`
+`<object>` can be prefixed by a minus sign to reverse the sort order of the field and can be one of:
+
+| *Object* | *Description* |
+|:---------|:--------------|
+| `jobs` | sort jobs |
+| `nodes` | sort nodes |
+| `partitions` | sort partitions |
+| `reservations` | sort reservations |
+
+The value of `<field>` depends of the `<object>` type used and are described below
+
+### Sorting jobs
+
+| *Field* | *Description* |
+|:--------|:--------------|
+| `batchhost` | sort by batch host |
+| `cpus` | sort by cpus |
+| `gres` | sort by GRES |
+| `jobid` | sort by job id (*this is the default*) |
+| `licenses` | sort by licenses |
+| `name` | sort by name |
+| `nodes` | sort by nodes |
+| `partition` | sort by partitions |
+| `reason` | sort by state reason |
+| `starttime` | sort by starttime |
+| `state` | sort by state |
+| `tres` | sort by TRES |
+| `user` | sort by user |
+
+### Sorting nodes
+
+| *Field* | *Description* |
+|:--------|:--------------|
+| `boards` | sort by number of boards |
+| `hostname` | sort by hostname |
+| `nodename` | sort by node name (*this is the default*) |
+| `partition` | sort by partitions |
+| `reason` | sort by state reason |
+| `slurmversion` | sort by reported SLURM version |
+| `sockets` | sort by number of sockets |
+| `state` | sort by state |
+| `threadsbycore` | sort by threads per core |
+| `tresallocated` | sort by allocated TRES |
+| `tresconfigured` | sort by configured TRES |
+
+### Sorting partitions
+
+| *Field* | *Description* |
+|:--------|:--------------|
+| `allocated` | sort by allocated nodes |
+| `allocatedpercent` | sort by allocation percentage |
+| `idle` | sort by idle nodes |
+| `idlepercent` | sort by idle percentage |
+| `other` | sort by other nodes |
+| `otherpercent` | sort by percentage of other nodes |
+| `partition` | sort by partition name (*this is the default*) |
+| `total` | sort by total nodes |
+
+### Sorting reservations
+
+| *Field* | *Description* |
+|:--------|:--------------|
+| `accounts` | sort by accounts |
+| `burstbuffers` | sort by burst buffers |
+| `corecount` | sort by core count |
+| `duration` | sort by duration |
+| `end time` | sort by end time |
+| `features` | sort by features |
+| `flags` | sort by flags |
+| `licenses` | sort by licenses |
+| `name` | sort by reservation name (*this is the default*) |
+| `nodecount` | sort by node count |
+| `nodes` | sort by nodes |
+| `partition` | sort by partition |
+| `starttime` | sort by start time |
+| `state` | sort by state |
+| `tres` | sort by TRES |
+| `users` | sort by users |
+| `watts` | sort by watts |
 
 # Licenses
 ## slurm-qstat
