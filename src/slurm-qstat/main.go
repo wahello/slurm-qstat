@@ -124,13 +124,13 @@ func main() {
 	}
 
 	if *reservations {
-		rsvInfo, err := getReservations()
+		_rsvInfo, err := getReservations()
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Error: Can'T get reservations from SLURM: %s\n", err)
 			os.Exit(1)
 		}
 
-		rsvInfo = filterReservations(rsvInfo, filter)
+		rsvInfo := sortReservations(filterReservations(_rsvInfo, filter), uint8((sortFlag&sortReservationsMask)>>24))
 		printReservationStatus(rsvInfo, *brief)
 	}
 

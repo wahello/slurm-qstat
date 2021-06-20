@@ -81,12 +81,50 @@ const helpText = `Usage: %s [--brief] [--filter=<part>,...] [--help] --jobs=<fil
                                             total - sort by total nodes
 
                                         reservations:
+                                            accounts - sort by accounts
+                                            burstbuffers - sort by burst buffers
+                                            corecount - sort by core count
+                                            duration - sort by duration
+                                            end time - sort by end time
+                                            features - sort by features
+                                            flags - sort by flags
+                                            licenses - sort by licenses
+                                            name - sort by reservation name (this is the default)
+                                            nodecount - sort by node count
+                                            nodes - sort by nodes
+                                            partition - sort by partition
+                                            starttime - sort by start time
+                                            state - sort by state
+                                            tres - sort by TRES
+                                            users - sort by users
+                                            watts - sort by watts
 
     --version                   Show version information
 `
 
 const sortReverse uint8 = 0x80
 const maskSortReverse uint8 = 0x7f
+
+const sortReservationsMask uint32 = 0xff000000
+const (
+	sortReservationsByName uint8 = iota
+	sortReservationsByPartition
+	sortReservationsByState
+	sortReservationsByStartTime
+	sortReservationsByEndTime
+	sortReservationsByDuration
+	sortReservationsByNodes
+	sortReservationsByNodeCount
+	sortReservationsByCoreCount
+	sortReservationsByFeatures
+	sortReservationsByFlags
+	sortReservationsByTres
+	sortReservationsByUsers
+	sortReservationsByAccounts
+	sortReservationsByLicenses
+	sortReservationsByBurstBuffer
+	sortReservationsByWatts
+)
 
 const sortPartitionsMask uint32 = 0x00ff0000
 const (

@@ -118,6 +118,13 @@ func buildSortFlag(s string) (uint32, error) {
 			}
 
 		case "reservations":
+			r, err = buildSortFlagReservations(by)
+			if err != nil {
+				return fl, err
+			}
+			if _rev {
+				r |= sortReverse
+			}
 
 		default:
 			return fl, fmt.Errorf("Invalid sorting object to sort %s", s)
@@ -126,6 +133,49 @@ func buildSortFlag(s string) (uint32, error) {
 
 	fl = uint32(r)<<24 + uint32(p)<<16 + uint32(j)<<8 + uint32(n)
 	return fl, nil
+}
+
+func buildSortFlagReservations(s string) (uint8, error) {
+	var n uint8
+	switch s {
+	case "accounts":
+		n = sortReservationsByAccounts
+	case "burstbuffer":
+		n = sortReservationsByBurstBuffer
+	case "corecount":
+		n = sortReservationsByCoreCount
+	case "duration":
+		n = sortReservationsByDuration
+	case "endtime":
+		n = sortReservationsByEndTime
+	case "features":
+		n = sortReservationsByFeatures
+	case "flags":
+		n = sortReservationsByFlags
+	case "licenses":
+		n = sortReservationsByLicenses
+	case "name":
+		n = sortReservationsByName
+	case "nodecount":
+		n = sortReservationsByNodeCount
+	case "nodes":
+		n = sortReservationsByNodes
+	case "partition":
+		n = sortReservationsByPartition
+	case "starttime":
+		n = sortReservationsByStartTime
+	case "state":
+		n = sortReservationsByState
+	case "tres":
+		n = sortReservationsByTres
+	case "users":
+		n = sortReservationsByUsers
+	case "watts":
+		n = sortReservationsByWatts
+	default:
+		return n, fmt.Errorf("Invalid sort field %s for reservations", s)
+	}
+	return n, nil
 }
 
 func buildSortFlagPartitions(s string) (uint8, error) {

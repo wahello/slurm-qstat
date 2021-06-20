@@ -433,7 +433,7 @@ func printNodeStatus(n []nodeData, brief bool) {
 	table.Render()
 }
 
-func printReservationStatus(reservation map[string]reservationData, brief bool) {
+func printReservationStatus(reservation []reservationData, brief bool) {
 	var data [][]string
 	var nodesCnt uint64
 	var coresCnt uint64
@@ -441,7 +441,12 @@ func printReservationStatus(reservation map[string]reservationData, brief bool) 
 	var activeCnt uint64
 	var otherCnt uint64
 
-	for rsv, rsvData := range reservation {
+	for _, rsvData := range reservation {
+		rsv, found := rsvData["ReservationName"]
+		if !found {
+			log.Panicf("BUG: ReservationName not found for reservation data: %+v", rsvData)
+		}
+
 		partition, found := rsvData["PartitionName"]
 		if !found {
 			log.Panicf("BUG: PartitionName not found for reservation %s", rsv)
