@@ -58,7 +58,8 @@ func main() {
 
 	sortFlag, err := buildSortFlag(*sortby)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error: Can't parse sort string: %s", err)
+		fmt.Fprintf(os.Stderr, "Error: Can't parse sort string: %s\n\n", err)
+		showHelp()
 		os.Exit(1)
 	}
 
@@ -106,7 +107,7 @@ func main() {
 			jobInfo[j] = _jobInfo[j]
 		}
 
-		jobInfoSorted := sortJobs(jobInfo, uint8(sortFlag&sortJobsMask))
+		jobInfoSorted := sortJobs(jobInfo, uint8(sortFlag&sortJobsMask>>8))
 		printJobStatus(jobInfoSorted, *brief)
 	}
 
