@@ -1,13 +1,13 @@
 package main
 
 const name = "slurm-qstat"
-const version = "1.4.0-20210620"
+const version = "1.4.0-20210626"
 
 const versionText = `%s version %s
 Copyright (C) 2021 by Andreas Maus <maus@ypbind.de>
 This program comes with ABSOLUTELY NO WARRANTY.
 
-pkidb is distributed under the Terms of the GNU General
+%s is distributed under the Terms of the GNU General
 Public License Version 3. (http://www.gnu.org/copyleft/gpl.html)
 
 Build with go version: %s

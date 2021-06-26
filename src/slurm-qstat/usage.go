@@ -6,7 +6,7 @@ import (
 )
 
 func showVersion() {
-	fmt.Printf(versionText, name, version, runtime.Version())
+	fmt.Printf(versionText, name, version, name, runtime.Version())
 }
 
 func showHelp() {
