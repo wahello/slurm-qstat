@@ -337,6 +337,8 @@ func printNodeStatus(n []nodeData, brief bool) {
 			drainedCount++
 		} else if state == "MIXED" {
 			mixedCount++
+		} else if state == "MIXED+DRAIN" {
+			drainedCount++
 		} else if strings.Contains(state, "DOWN") {
 			downCount++
 		} else if state == "RESERVED" {
