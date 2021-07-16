@@ -1,10 +1,12 @@
 BINDIR	= $(CURDIR)/bin
 
-depend:
-	# go mod will handle dependencies
-
 build:
 	cd $(CURDIR)/src/slurm-qstat && go get slurm-qstat/src/slurm-qstat && go build -o $(CURDIR)/bin/slurm-qstat
+
+all: depend build strip install
+
+depend:
+	# go mod will handle dependencies
 
 destdirs:
 	mkdir -p -m 0755 $(DESTDIR)/usr/bin
@@ -29,7 +31,5 @@ distclean: clean
 	rm -rf pkg/
 
 uninstall:
-	/bin/rm -f $(DESTDIR)/usr/bin
-
-all: depend build strip install
+	/bin/rm -f $(DESTDIR)/usr/bin/slurm-qstat
 
