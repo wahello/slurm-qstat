@@ -1,7 +1,3 @@
-**_Note:_** Because I'm running my own servers for several years, main development is done at at https://git.ypbind.de/cgit/slurm-qstat/
-
-----
-
 # Preface
 `slurm-qstat` tries to display information about jobs, nodes, partitions and reservations of the SLURM queueing system
 
