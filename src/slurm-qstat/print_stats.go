@@ -320,7 +320,11 @@ func printNodeStatus(n []nodeData, brief bool) {
 		if !found {
 			log.Panicf("BUG: No NodeName found for node %+v\n", ndata)
 		}
-		node := nname
+
+		node, found := ndata["NodeHostName"]
+		if !found {
+			node = nname
+		}
 
 		state, found := ndata["State"]
 		if !found {
