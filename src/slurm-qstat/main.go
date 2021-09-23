@@ -17,7 +17,11 @@ func main() {
 	var reservations = flag.Bool("reservations", false, "Show reservations")
 	var brief = flag.Bool("brief", false, "Show brief output")
 	var sortby = flag.String("sort", "", "Sort output by fields")
+	var clusters = flag.Bool("clusters", false, "Show clusters")
 	var filter []string
+	var cluster = flag.String("cluster", "", "Show data for cluster <cluster>")
+	var _clusterInfo map[string]clusterData
+	var _cluster []string
 
 	flag.Usage = showHelp
 	flag.Parse()
@@ -42,7 +46,7 @@ func main() {
 		filter = strings.Split(*filterStr, ",")
 	}
 
-	if !*partitions && *jobs == "" && !*nodes && !*reservations {
+	if !*partitions && *jobs == "" && !*nodes && !*reservations && !*clusters {
 		fmt.Fprint(os.Stderr, "Error: What should be displayed?\n\n")
 		showHelp()
 		os.Exit(1)
@@ -61,6 +65,44 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Error: Can't parse sort string: %s\n\n", err)
 		showHelp()
 		os.Exit(1)
+	}
+
+	if *cluster != "" {
+		_clusterInfo, err = getClusterInformation()
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error: Can't get cluster list from SLURM: %s\n", err)
+			os.Exit(1)
+		}
+		if *cluster == "all" {
+			for key := range _clusterInfo {
+				_cluster = append(_cluster, key)
+			}
+		} else {
+			_cluster = strings.Split(*cluster, ",")
+			// Sanity check, all always include all clusters
+			for _, v := range _cluster {
+				if v == "all" && len(_cluster) > 1 {
+					fmt.Fprintf(os.Stderr, "Error: Keyword 'all' found in cluster list. Don't specify any additional clusters because they will be already included")
+					os.Exit(1)
+				}
+			}
+		}
+
+		err = checkClusterlist(_cluster, _clusterInfo)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
+		}
+	}
+
+	if *clusters {
+		clustInfo, err := getClusterInformation()
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error: Can't get cluster list from SLURM: %s\n", err)
+			os.Exit(1)
+		}
+		cInfo := filterCluster(clustInfo, _cluster)
+		printClusterStatus(cInfo, *brief)
 	}
 
 	if *partitions {

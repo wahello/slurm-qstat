@@ -11,6 +11,129 @@ import (
 	"github.com/olekukonko/tablewriter"
 )
 
+func printClusterStatus(c []clusterData, brief bool) {
+	var data [][]string
+
+	for _, value := range c {
+		cluster, found := value["Cluster"]
+		if !found {
+			log.Panic("BUG: No Cluster field found")
+		}
+
+		ctrlHost, found := value["ControlHost"]
+		if !found {
+			log.Panic("BUG: No ControlHost field found")
+		}
+
+		ctrlPort, found := value["ControlPort"]
+		if !found {
+			log.Panic("BUG: No ControlPort field found")
+		}
+
+		nodeCount, found := value["NodeCount"]
+		if !found {
+			log.Panic("BUG: No NodeCount field found")
+		}
+
+		clusterNodes, found := value["ClusterNodes"]
+		if !found {
+			log.Panic("BUG: No ClusterNodes field found")
+		}
+
+		defaultQos, found := value["DefaultQOS"]
+		if !found {
+			log.Panic("BUG: No DefaultQOS field found")
+		}
+		if defaultQos == "" {
+			defaultQos = "<undefined>"
+		}
+
+		fairshare, found := value["Fairshare"]
+		if !found {
+			log.Panic("BUG: No Fairshare field found")
+		}
+		if fairshare == "" {
+			fairshare = "<undefined>"
+		}
+
+		maxJobs, found := value["MaxJobs"]
+		if !found {
+			log.Panic("BUG: No MaxJobs field found")
+		}
+		if maxJobs == "" {
+			maxJobs = "<undefined>"
+		}
+
+		maxNodes, found := value["MaxNodes"]
+		if !found {
+			log.Panic("BUG: No MaxNodes field found")
+		}
+		if maxNodes == "" {
+			maxNodes = "<undefined>"
+		}
+
+		maxSubmitJobs, found := value["MaxSubmitJobs"]
+		if !found {
+			log.Panic("BUG: No MaxSubmitJobs field found")
+		}
+		if maxSubmitJobs == "" {
+			maxSubmitJobs = "<undefined>"
+		}
+
+		maxWall, found := value["MaxWall"]
+		if !found {
+			log.Panic("BUG: No MaxWall field found")
+		}
+		if maxWall == "" {
+			maxWall = "<undefined>"
+		}
+
+		tres, found := value["TRES"]
+		if !found {
+			log.Panic("BUG: No TRES field found")
+		}
+		if tres == "" {
+			tres = "<undefined>"
+		}
+
+		if brief {
+			data = append(data, []string{
+				cluster,
+				ctrlHost,
+				ctrlPort,
+				nodeCount,
+				tres,
+			})
+		} else {
+			data = append(data, []string{
+				cluster,
+				ctrlHost,
+				ctrlPort,
+				nodeCount,
+				defaultQos,
+				fairshare,
+				maxJobs,
+				maxNodes,
+				maxSubmitJobs,
+				maxWall,
+				tres,
+				clusterNodes,
+			})
+		}
+	}
+
+	table := tablewriter.NewWriter(os.Stdout)
+
+	if brief {
+		table.SetHeader([]string{"Cluster", "ControlHost", "ControlPort", "NodeCount", "TRES"})
+	} else {
+		table.SetHeader([]string{"Cluster", "ControlHost", "ControlPort", "NodeCount", "DefaultQOS", "Fairshare", "MaxJobs", "MaxNodes", "MaxSubmitJobs", "MaxWall", "TRES", "ClusterNodes"})
+	}
+
+	table.AppendBulk(data)
+	table.Render()
+}
+
 func printPartitionStatus(p []partitionInfo, brief bool) {
 	var data [][]string
 	var idleSum uint64

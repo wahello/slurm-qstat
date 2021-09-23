@@ -1,7 +1,7 @@
 package main
 
 const name = "slurm-qstat"
-const version = "1.4.1"
+const version = "1.4.2-20210923"
 
 const versionText = `%s version %s
 Copyright (C) 2021 by Andreas Maus <maus@ypbind.de>
@@ -13,9 +13,11 @@ Public License Version 3. (http://www.gnu.org/copyleft/gpl.html)
 Build with go version: %s
 `
 
-const helpText = `Usage: %s [--brief] [--filter=<part>,...] [--help] --jobs=<filter>|--nodes|--partitions|--reservations [--sort=<sort>] [--version]
+const helpText = `Usage: %s [--brief] [--filter=<part>,...] [--help] --clusters|--jobs=<filter>|--nodes|--partitions|--reservations [--sort=<sort>] [--version]
 
     --brief                     Show brief output
+
+    --clusters                  Show cluster information
 
     --filter=<part>,...         Limit output to comma separated list of partitions
 
@@ -169,3 +171,30 @@ const (
 	sortJobsByName
 	sortJobsByStartTime
 )
+
+var clusterFields = []string{
+	"Classification",
+	"Cluster",
+	"ClusterNodes",
+	"ControlHost",
+	"ControlPort",
+	"DefaultQOS",
+	"Fairshare",
+	"Flags",
+	"GrpTRESMins",
+	"GrpTRES",
+	"GrpJobs",
+	"GrpMemory",
+	"GrpNodes",
+	"GrpSubmitJob",
+	"MaxTRESMins",
+	"MaxTRES",
+	"MaxJobs",
+	"MaxNodes",
+	"MaxSubmitJobs",
+	"MaxWall",
+	"NodeCount",
+	"PluginIDSelect",
+	"RPC",
+	"TRES",
+}
