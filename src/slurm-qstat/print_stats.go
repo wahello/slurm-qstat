@@ -454,6 +454,38 @@ func printNodeStatus(n []nodeData, brief bool) {
 			log.Panicf("BUG: No State for node %s\n", node)
 		}
 
+		/*
+		 *
+		 * Additional node flags are:
+		 *
+		 * * The node is presently not responding and will not be allocated any new work. If the node remains non-responsive, it will be placed in the DOWN state (except in the case of COMPLETING, DRAINED, DRAINING, FAIL, FAILING nodes).
+		 * ~ The node is presently in a power saving mode (typically running at reduced frequency).
+		 * # The node is presently being powered up or configured.
+		 * % The node is presently being powered down.
+		 * $ The node is currently in a reservation with a flag value of "maintenance"
+		 * @ The node is pending reboot.
+		 *
+		 * Additionally for ALLOCATED nodes: +
+		 *
+		 */
+		_lchr := state[len(state)-1]
+		switch _lchr {
+		case '*':
+			fallthrough
+		case '-':
+			fallthrough
+		case '#':
+			fallthrough
+		case '%':
+			fallthrough
+		case '$':
+			fallthrough
+		case '@':
+			fallthrough
+		case '+':
+			state = state[0 : len(state)-1]
+		}
+
 		if state == "ALLOCATED" {
 			allocCount++
 		} else if state == "ALLOCATED+DRAIN" {
