@@ -39,7 +39,7 @@ func getAllPartitions() ([]string, error) {
 
 func getPartitionInformation(nodeInfo map[string]nodeData, filter []string) (map[string]partitionInfo, error) {
 	var result = make(map[string]partitionInfo)
-	var regexpWhiteSpace = regexp.MustCompile("\\s+")
+	var regexpWhiteSpace = regexp.MustCompile(`\\s+`)
 	var err error
 
 	if len(filter) == 0 {

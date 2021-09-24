@@ -8,7 +8,7 @@ import (
 
 func getJobInformation() (map[string]jobData, error) {
 	var result = make(map[string]jobData)
-	var regexpWhiteSpace = regexp.MustCompile("\\s+")
+	var regexpWhiteSpace = regexp.MustCompile(`\s+`)
 
 	raw, err := executeCommand("scontrol", "--details", "--oneliner", "--quiet", "show", "jobs")
 	if err != nil {

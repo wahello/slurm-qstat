@@ -37,27 +37,24 @@ func checkClusterlist(clist []string, all map[string]clusterData) error {
 	for _, c := range clist {
 		_, found := all[c]
 		if !found {
-			return fmt.Errorf("Cluster %s is not in list of defined SLURM clusters", c)
+			return fmt.Errorf("cluster %s is not in list of defined SLURM clusters", c)
 		}
 	}
 	return nil
 }
 
-func filterCluster(cdata map[string]clusterData, cl []string) []clusterData {
-	var result []clusterData
+/*
+func filterCluster(cdata map[string]clusterData, cl []string) map[string]clusterData {
+	var result = make(map[string]clusterData)
 
 	if len(cl) > 0 {
 		for _, c := range cl {
 			cluster, found := cdata[c]
 			if found {
-				result = append(result, cluster)
+				result[c] = cluster
 			}
 		}
-	} else {
-		for _, v := range cdata {
-			result = append(result, v)
-		}
 	}
-
-	return result
+	return cdata
 }
+*/

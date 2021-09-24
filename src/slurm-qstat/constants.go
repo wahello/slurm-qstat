@@ -1,7 +1,7 @@
 package main
 
 const name = "slurm-qstat"
-const version = "1.4.2-20210923"
+const version = "1.4.2-20210924"
 
 const versionText = `%s version %s
 Copyright (C) 2021 by Andreas Maus <maus@ypbind.de>
@@ -38,13 +38,28 @@ const helpText = `Usage: %s [--brief] [--filter=<part>,...] [--help] --clusters|
                                     <sort> is a comma separated list of <object>:<field>
                                     <object> can be prefixed by a minus sign to reverse the sort order of the field
                                     <object> can be one of:
+										clusters - sort clusters
                                         jobs - sort jobs
                                         nodes - sort nodes
                                         partitions - sort partitions
                                         reservations - sort reservations
 
                                     <field> depends of the <object> type:
-                                        jobs:
+										clusters:
+											name - sort by cluster name
+											controlhost - sort by control host
+											controlport - sort by control port
+											nodecount - sort by node count
+											defaultqos - sort by default QoS
+											fairshare - sort by fairshare
+											maxjobs - sort my max. jobs
+											maxnodes - sort by max. nodes
+											maxsubmitjobs - sort by max. submitted jobs
+											maxwall - sort by max. wall time
+											tres - sort by TRES
+											clusternodes - sort by cluster nodes
+
+										jobs:
                                             batchhost - sort by batch host
                                             cpus - sort by cpus
                                             gres - sort by GRES
@@ -107,7 +122,7 @@ const helpText = `Usage: %s [--brief] [--filter=<part>,...] [--help] --clusters|
 const sortReverse uint8 = 0x80
 const maskSortReverse uint8 = 0x7f
 
-const sortReservationsMask uint32 = 0xff000000
+const sortReservationsMask uint64 = 0x00000000ff000000
 const (
 	sortReservationsByName uint8 = iota
 	sortReservationsByPartition
@@ -128,7 +143,7 @@ const (
 	sortReservationsByWatts
 )
 
-const sortPartitionsMask uint32 = 0x00ff0000
+const sortPartitionsMask uint64 = 0x0000000000ff0000
 const (
 	sortPartitionsByPartition uint8 = iota
 	sortPartitionsByAllocated
@@ -140,7 +155,7 @@ const (
 	sortPartitionsByTotal
 )
 
-const sortNodesMask uint32 = 0x000000ff
+const sortNodesMask uint64 = 0x00000000000000ff
 const (
 	sortNodesByNodeName uint8 = iota
 	sortNodesByHostName
@@ -155,7 +170,7 @@ const (
 	sortNodesByReason
 )
 
-const sortJobsMask uint32 = 0x0000ff00
+const sortJobsMask uint64 = 0x000000000000ff00
 const (
 	sortJobsByJobID uint8 = iota
 	sortJobsByPartition
@@ -170,6 +185,22 @@ const (
 	sortJobsByTres
 	sortJobsByName
 	sortJobsByStartTime
+)
+
+const sortClusterMask uint64 = 0x00000000ff000000
+const (
+	sortClusterByName uint8 = iota
+	sortClusterByControlHost
+	sortClusterByControlPort
+	sortClusterByNodeCount
+	sortClusterByDefaultQos
+	sortClusterByFairShare
+	sortClusterByMaxJobs
+	sortClusterByMaxNodes
+	sortClusterByMaxSubmitJobs
+	sortClusterByMaxWall
+	sortClusterByTres
+	sortClusterByClusterNodes
 )
 
 var clusterFields = []string{

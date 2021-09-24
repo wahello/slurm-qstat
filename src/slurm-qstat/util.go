@@ -4,20 +4,20 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-	"sort"
 	"strconv"
 	"strings"
 )
 
 func executeCommand(cmd string, args ...string) ([]byte, error) {
 	exe := exec.Command(cmd, args...)
-	exe.Env = append(os.Environ())
+	exe.Env = os.Environ()
 	exe.Env = append(exe.Env, "LANG=C")
 	exe.Env = append(exe.Env, "SLURM_TIME_FORMAT=standard")
 
 	return exe.Output()
 }
 
+/*
 func sortByNumber(u []string) ([]string, error) {
 	var temp []int64
 	var sorted []string
@@ -41,6 +41,7 @@ func sortByNumber(u []string) ([]string, error) {
 
 	return sorted, nil
 }
+*/
 
 func getCpusFromTresString(tres string) (uint64, error) {
 	var cpu uint64
@@ -64,12 +65,13 @@ func getCpusFromTresString(tres string) (uint64, error) {
 	return cpu, nil
 }
 
-func buildSortFlag(s string) (uint32, error) {
-	var fl uint32
+func buildSortFlag(s string) (uint64, error) {
+	var fl uint64
 	var n uint8
 	var j uint8
 	var p uint8
 	var r uint8
+	var c uint8
 	var err error
 
 	if len(s) == 0 {
@@ -79,7 +81,7 @@ func buildSortFlag(s string) (uint32, error) {
 	for _, splitted := range strings.Split(s, ",") {
 		whatby := strings.SplitN(splitted, ":", 2)
 		if len(whatby) != 2 {
-			return fl, fmt.Errorf("Invalid sorting string %s", s)
+			return fl, fmt.Errorf("invalid sorting string %s", s)
 		}
 		what := strings.ToLower(whatby[0])
 		by := strings.ToLower(whatby[1])
@@ -90,6 +92,14 @@ func buildSortFlag(s string) (uint32, error) {
 		}
 
 		switch what {
+		case "clusters":
+			c, err = buildSortFlagClusters(by)
+			if err != nil {
+				return fl, err
+			}
+			if _rev {
+				c |= sortReverse
+			}
 		case "nodes":
 			n, err = buildSortFlagNodes(by)
 			if err != nil {
@@ -127,11 +137,11 @@ func buildSortFlag(s string) (uint32, error) {
 			}
 
 		default:
-			return fl, fmt.Errorf("Invalid sorting object to sort %s", s)
+			return fl, fmt.Errorf("invalid sorting object to sort %s", s)
 		}
 	}
 
-	fl = uint32(r)<<24 + uint32(p)<<16 + uint32(j)<<8 + uint32(n)
+	fl = uint64(c)<<uint64(r)<<24 + uint64(p)<<16 + uint64(j)<<8 + uint64(n)
 	return fl, nil
 }
 
@@ -173,7 +183,7 @@ func buildSortFlagReservations(s string) (uint8, error) {
 	case "watts":
 		n = sortReservationsByWatts
 	default:
-		return n, fmt.Errorf("Invalid sort field %s for reservations", s)
+		return n, fmt.Errorf("invalid sort field %s for reservations", s)
 	}
 	return n, nil
 }
@@ -198,7 +208,7 @@ func buildSortFlagPartitions(s string) (uint8, error) {
 	case "total":
 		n = sortPartitionsByTotal
 	default:
-		return n, fmt.Errorf("Invalid sort field %s for partitions", s)
+		return n, fmt.Errorf("invalid sort field %s for partitions", s)
 	}
 	return n, nil
 }
@@ -234,7 +244,7 @@ func buildSortFlagJobs(s string) (uint8, error) {
 	case "user":
 		n = sortJobsByUser
 	default:
-		return n, fmt.Errorf("Invalid sort field %s for jobs", s)
+		return n, fmt.Errorf("invalid sort field %s for jobs", s)
 	}
 	return n, nil
 }
@@ -266,7 +276,41 @@ func buildSortFlagNodes(s string) (uint8, error) {
 	case "reason":
 		n = sortNodesByReason
 	default:
-		return n, fmt.Errorf("Invalid sort field %s for nodes", s)
+		return n, fmt.Errorf("invalid sort field %s for nodes", s)
+	}
+	return n, nil
+}
+
+func buildSortFlagClusters(s string) (uint8, error) {
+	var n uint8
+
+	switch s {
+	case "name":
+		n = sortClusterByName
+	case "controlhost":
+		n = sortClusterByControlHost
+	case "controlport":
+		n = sortClusterByControlPort
+	case "nodecount":
+		n = sortClusterByNodeCount
+	case "defaultqos":
+		n = sortClusterByDefaultQos
+	case "fairshare":
+		n = sortClusterByFairShare
+	case "maxjobs":
+		n = sortClusterByMaxJobs
+	case "maxnodes":
+		n = sortClusterByMaxNodes
+	case "maxsubmitjobs":
+		n = sortClusterByMaxSubmitJobs
+	case "maxwall":
+		n = sortClusterByMaxWall
+	case "tres":
+		n = sortClusterByTres
+	case "clusternodes":
+		n = sortClusterByClusterNodes
+	default:
+		return n, fmt.Errorf("invalid sort field %s for clusters", s)
 	}
 	return n, nil
 }

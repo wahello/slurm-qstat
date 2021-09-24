@@ -125,9 +125,9 @@ func printClusterStatus(c []clusterData, brief bool) {
 	table := tablewriter.NewWriter(os.Stdout)
 
 	if brief {
-		table.SetHeader([]string{"Cluster", "ControlHost", "ControlPort", "NodeCount", "TRES"})
+		table.SetHeader([]string{"Name", "ControlHost", "ControlPort", "NodeCount", "TRES"})
 	} else {
-		table.SetHeader([]string{"Cluster", "ControlHost", "ControlPort", "NodeCount", "DefaultQOS", "Fairshare", "MaxJobs", "MaxNodes", "MaxSubmitJobs", "MaxWall", "TRES", "ClusterNodes"})
+		table.SetHeader([]string{"Name", "ControlHost", "ControlPort", "NodeCount", "DefaultQOS", "Fairshare", "MaxJobs", "MaxNodes", "MaxSubmitJobs", "MaxWall", "TRES", "ClusterNodes"})
 	}
 
 	table.AppendBulk(data)
@@ -268,8 +268,6 @@ func printJobStatus(j []jobData, brief bool) {
 			log.Panicf("BUG: No partition found for job %s\n", job)
 		}
 
-		tres := jData["TRES"]
-
 		_numCpus, found := jData["NumCPUs"]
 		if !found {
 			log.Panicf("BUG: NumCPUs not found for job %s\n", job)
@@ -302,7 +300,7 @@ func printJobStatus(j []jobData, brief bool) {
 			gres = ""
 		}
 
-		tres = jData["TRES"]
+		tres := jData["TRES"]
 		if tres == "(null}" {
 			tres = ""
 		}

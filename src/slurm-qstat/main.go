@@ -101,7 +101,8 @@ func main() {
 			fmt.Fprintf(os.Stderr, "Error: Can't get cluster list from SLURM: %s\n", err)
 			os.Exit(1)
 		}
-		cInfo := filterCluster(clustInfo, _cluster)
+		//		_cInfo := filterCluster(clustInfo, _cluster)
+		cInfo := sortClusters(clustInfo, uint8((sortFlag&sortClusterMask)>>32))
 		printClusterStatus(cInfo, *brief)
 	}
 
