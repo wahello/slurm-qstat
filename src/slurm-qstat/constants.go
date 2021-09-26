@@ -1,7 +1,7 @@
 package main
 
 const name = "slurm-qstat"
-const version = "1.4.2-20210924"
+const version = "1.4.2-20210926"
 
 const versionText = `%s version %s
 Copyright (C) 2021 by Andreas Maus <maus@ypbind.de>
@@ -187,7 +187,7 @@ const (
 	sortJobsByStartTime
 )
 
-const sortClusterMask uint64 = 0x00000000ff000000
+const sortClusterMask uint64 = 0x000000ff00000000
 const (
 	sortClusterByName uint8 = iota
 	sortClusterByControlHost

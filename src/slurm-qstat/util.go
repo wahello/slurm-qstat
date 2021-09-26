@@ -141,7 +141,7 @@ func buildSortFlag(s string) (uint64, error) {
 		}
 	}
 
-	fl = uint64(c)<<uint64(r)<<24 + uint64(p)<<16 + uint64(j)<<8 + uint64(n)
+	fl = uint64(c)<<32 + uint64(r)<<24 + uint64(p)<<16 + uint64(j)<<8 + uint64(n)
 	return fl, nil
 }
 
