@@ -1,6 +1,10 @@
 # Preface
 `slurm-qstat` tries to display information about jobs, nodes, partitions and reservations of the SLURM queueing system
 
+# Repositories
+* Primary development repository: https://git.ypbind.de/cgit/slurm-qstat/
+* Backup repository: https://github.com/Bobobo-bo-Bo-bobo/slurm-qstat
+
 # Build requirements
 This tool is implemented in Go so, obviously, a Go compiler is required.
 Additionally the [tablewriter](https://github.com/olekukonko/tablewriter) is required for the build.
