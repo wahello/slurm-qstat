@@ -110,7 +110,7 @@ The value of `<field>` depends of the `<object>` type used and are described bel
 
 # Licenses
 ## slurm-qstat
-
+```
 Copyright (C) 2021 by Andreas Maus
 
 This program is free software: you can redistribute it and/or modify
@@ -125,9 +125,11 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
+```
 
 ## tablewriter (https://github.com/olekukonko/tablewriter)
 
+```
 Copyright (C) 2014 by Oleku Konko
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -147,4 +149,5 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
+```
 
