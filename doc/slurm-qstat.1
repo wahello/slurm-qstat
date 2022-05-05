@@ -1,0 +1,285 @@
+.TH slurm-qstat 1 "May 5th, 2022" "Version 1.4.1"
+.SH NAME
+slurm-qstat - Show information about SLURM nodes, partitions, reservations and jobs in a concise layout
+
+.SH SYNOPSIS
+.B
+slurm-qstat
+[
+.I --brief
+]
+[
+.I --filter=<part>,...
+]
+[
+.I --help
+]
+.I --jobs=<filter>|--nodes|--partitions|--reservations
+[
+.I --sort=<sort>
+]
+[
+.I --version
+]
+
+.SH DESCRIPTION
+Show information about SLURM nodes, partitions, reservations and jobs in a concise table layout
+
+.SH OPTIONS
+.B --brief
+.br
+.RS
+Show brief output
+.RE
+
+.B --filter=<part>,...
+.br
+.RS
+Limit output to comma separated list of partitions.
+.RE
+
+.B --help
+.br
+.RS
+Show usage information
+.RE
+
+.B --jobs=<filter>
+.br
+.RS
+Show job information. <filter> can be one of:
+.RS
+.I all\c
+\- show all jobs
+.br
+.I not-running\c
+\- show jobs not running (state other than RUNNING)
+.br
+.I running\c
+\- show only running jobs (state RUNNING)
+.RE
+.RE
+
+.B --nodes
+.br
+.RS
+Show node information
+.RE
+
+.B --partitions
+.br
+.RS
+Show partition information
+.RE
+
+.B --reservations
+.br
+.RS
+Show reservation information
+.RE
+
+.B --sort=<sort>
+.br
+.RS
+Sort output by field <sort> in ascending order
+.RS
+.I <sort>\c
+ is a comma separated list of <object>:<field>
+.br
+.I <object>\c
+ can be prefixed by a minus sign to reverse the sort order of the field
+.I <object>\c
+ can be one of:
+.RS
+.I jobs\c
+\- sort jobs
+.br
+.I nodes\c
+ \- sort nodes
+.br
+.I partitions\c
+\- sort partitions
+.br
+.I reservations\c
+\- sort reservations
+.br
+.RE
+
+.I <field>\c
+ depends of the <object> type:
+.RS
+
+jobs:
+.RS
+.I batchhost\c
+\- sort by batch host
+.br
+.I cpus\c
+\- sort by cpus
+.br
+.I gres\c
+\- sort by GRES
+.br
+.I jobid\c
+\- sort by job id (this is the default)
+.br
+.I licenses\c
+\- sort by licenses
+.br
+.I name\c
+\- sort by name
+.br
+.I nodes\c
+\- sort by nodes
+.br
+.I partition\c
+\- sort by partitions
+.br
+.I reason\c
+\- sort by state reason
+.br
+.I starttime\c
+\- sort by starttime
+.br
+.I state\c
+\- sort by state
+.br
+.I tres\c
+\- sort by TRES
+.br
+.I user\c
+\- sort by user
+.br
+.RE
+
+nodes:
+.RS
+.I boards\c
+\- sort by number of boards
+.br
+.I hostname\c
+\- sort by hostname
+.br
+.I nodename\c
+\- sort by node name (this is the default)
+.br
+.I partition\c
+\- sort by partitions
+.br
+.I reason\c
+\- sort by state reason
+.br
+.I slurmversion\c
+\- sort by reported SLURM version
+.br
+.I sockets\c
+\- sort by number of sockets
+.br
+.I state\c
+\- sort by state
+.br
+.I threadsbycore\c
+\- sort by threads per core
+.br
+.I tresallocated\c
+\- sort by allocated TRES
+.br
+.I tresconfigured\c
+\- sort by configured TRES
+.br
+.RE
+
+partitions:
+.RS
+.I allocated\c
+\- sort by allocated nodes
+.br
+.I allocatedpercent\c
+\- sort by allocation percentage
+.br
+.I idle\c
+\- sort by idle nodes
+.br
+.I idlepercent\c
+\- sort by idle percentage
+.br
+.I other\c
+\- sort by other nodes
+.br
+.I otherpercent\c
+\- sort by percentage of other nodes
+.br
+.I partition\c
+\- sort by partition name (this is the default)
+.br
+.I total\c
+\- sort by total nodes
+.br
+.RE
+
+reservations:
+.RS
+.I accounts\c
+\- sort by accounts
+.br
+.I burstbuffers\c
+\- sort by burst buffers
+.br
+.I corecount\c
+\- sort by core count
+.br
+.I duration\c
+\- sort by duration
+.br
+.I endtime\c
+\- sort by end time
+.br
+.I features\c
+\- sort by features
+.br
+flags\c
+.I \- sort by flags
+.br
+.I licenses\c
+\- sort by licenses
+.br
+.I name\c
+\- sort by reservation name (this is the default)
+.br
+.I nodecount\c
+\- sort by node count
+.br
+.I nodes\c
+\- sort by nodes
+.br
+.I partition\c
+\- sort by partition
+.br
+.I starttime\c
+\- sort by start time
+.br
+.I state\c
+\- sort by state
+.br
+.I tres\c
+\- sort by TRES
+.br
+.I users\c
+\- sort by users
+.br
+.I watts\c
+\- sort by watts
+.br
+.RE
+.RE
+.RE
+.RE
+
+.B --version
+.RS
+Show version information
+.RE
+
+.SH AUTHOR
+Andreas Maus <maus@ypbind.de>
+
