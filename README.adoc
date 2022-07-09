@@ -1,5 +1,6 @@
-= slurm-qstat
+= slurm-qstat - Show information about SLURM nodes, reservations, partitions and jobs in a concise table layout
 :stylesheet: asciidoc.css
+:toc: left
 
 == Repositories
 
@@ -8,7 +9,7 @@
 
 == Preface
 
-`slurm-qstat` tries to display information about jobs, nodes, partitions and reservations of the SLURM queueing system
+`slurm-qstat` tries to display information about jobs, nodes, partitions and reservations of the SLURM queuing system
 
 == Build requirements
 
