@@ -4,7 +4,7 @@ const name = "slurm-qstat"
 const version = "1.4.2-20210926"
 
 const versionText = `%s version %s
-Copyright (C) 2021 by Andreas Maus <maus@ypbind.de>
+Copyright (C) 2021-2023 by Andreas Maus <maus@ypbind.de>
 This program comes with ABSOLUTELY NO WARRANTY.
 
 %s is distributed under the Terms of the GNU General
